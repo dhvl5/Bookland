@@ -11,12 +11,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -59,14 +61,19 @@ class MainActivity : ComponentActivity() {
                 Text(
                     text = stringResource(id = R.string.app_name),
                     color = MaterialTheme.colors.onPrimary,
-                    fontSize = 20.sp,
+                    style = TextStyle(
+                        fontSize = 30.sp,
+                        fontFamily = FontFamily.Cursive,
+                        fontWeight = FontWeight.ExtraBold,
+                    ),
                     modifier = Modifier
                         .fillMaxSize()
                         .wrapContentSize(Alignment.Center),
                     textAlign = TextAlign.Center,
                 )
             },
-            backgroundColor = MaterialTheme.colors.primary,
+            backgroundColor = MaterialTheme.colors.background,
+            elevation = 0.dp,
         )
     }
 
@@ -77,8 +84,8 @@ class MainActivity : ComponentActivity() {
         FloatingActionButton(onClick = {
             context.startActivity(Intent(context, SearchActivity::class.java))
             overridePendingTransition(R.anim.slide_in, R.anim.zoom_out)
-        }) {
-            Icon(Icons.Filled.Add, "", tint = Color.Black)
+        }, backgroundColor = MaterialTheme.colors.secondary) {
+            Icon(Icons.Filled.Add, "", tint = MaterialTheme.colors.onSecondary)
         }
     }
 
@@ -87,17 +94,17 @@ class MainActivity : ComponentActivity() {
         val items = listOf(BottomNavItem.ToRead, BottomNavItem.Reading, BottomNavItem.Finished)
 
         BottomNavigation(
-            backgroundColor = colorResource(id = R.color.white)
+            backgroundColor = MaterialTheme.colors.background,
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
             items.forEach { item ->
                 BottomNavigationItem(
-                    icon = { Icon(painterResource(id = item.icon), contentDescription = null, tint = Color.Black) },
-                    label = { Text(item.title, color = Color.Black) },
-                    selectedContentColor = Color.White,
-                    unselectedContentColor = Color.White.copy(.4f),
+                    icon = { Icon(painterResource(id = item.icon), contentDescription = null) },
+                    label = { Text(item.title) },
+                    selectedContentColor = MaterialTheme.colors.secondary,
+                    unselectedContentColor = MaterialTheme.colors.onSecondary.copy(.4f),
                     alwaysShowLabel = false,
                     selected = currentRoute == item.route,
                     onClick = {
