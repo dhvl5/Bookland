@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.BooklandV2" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Bookland" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -11,13 +11,13 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="statusBarBackground">@color/statusBarLight</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/statusBarBackground</item>
+        <item name="android:statusBarColor">@color/statusBarLight</item>
         <!-- Navigation bar color. -->
-        <item name="android:navigationBarColor">?android:attr/windowBackground</item>
+        <item name="android:navigationBarColor">@color/statusBarLight</item>
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.BooklandV2.NoActionBar">
+    <style name="Theme.Bookland.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -26,7 +26,7 @@
 
     <style name="Theme.BooklandV2.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="Theme.BooklandV2.Fullscreen" parent="Theme.BooklandV2">
+    <style name="Theme.BooklandV2.Fullscreen" parent="Theme.Bookland">
         <item name="android:actionBarStyle">@style/Widget.Theme.BooklandV2.ActionBar.Fullscreen
         </item>
         <item name="android:windowActionBarOverlay">true</item>

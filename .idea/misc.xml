@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/ic_finished.xml" value="0.23541666666666666" />
+        <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/ic_launcher_background.xml" value="0.23541666666666666" />
+        <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/ic_reading.xml" value="0.23541666666666666" />
+        <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/ic_to_read.xml" value="0.23541666666666666" />
         <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/image_not_available.xml" value="0.23541666666666666" />
         <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/image_not_supported.xml" value="0.23541666666666666" />
         <entry key="..\:/Projects/Android_Projects/BooklandV2/app/src/main/res/layout/activity_search.xml" value="0.33" />

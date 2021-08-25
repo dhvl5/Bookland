@@ -31,6 +31,7 @@ import com.dhaval.bookland.ui.theme.BooklandTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             BooklandTheme {
                 // A surface container using the 'background' color from the theme
@@ -81,11 +82,15 @@ class MainActivity : ComponentActivity() {
     fun FAB() {
         val context = LocalContext.current
 
-        FloatingActionButton(onClick = {
-            context.startActivity(Intent(context, SearchActivity::class.java))
-            overridePendingTransition(R.anim.slide_in, R.anim.zoom_out)
-        }, backgroundColor = MaterialTheme.colors.secondary) {
-            Icon(Icons.Filled.Add, "", tint = MaterialTheme.colors.onSecondary)
+        FloatingActionButton(
+            modifier = Modifier.size(60.dp),
+            onClick = {
+                context.startActivity(Intent(context, SearchActivity::class.java))
+                overridePendingTransition(R.anim.slide_in, R.anim.zoom_out)
+            },
+            backgroundColor = MaterialTheme.colors.secondary
+        ) {
+                Icon(Icons.Filled.Add, "", tint = MaterialTheme.colors.onSecondary)
         }
     }
 

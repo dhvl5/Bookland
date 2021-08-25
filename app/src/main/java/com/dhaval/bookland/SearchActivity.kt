@@ -1,6 +1,7 @@
 package com.dhaval.bookland
 
 import Book
+import ImageLinks
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -12,9 +13,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
@@ -23,12 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.dhaval.bookland.ui.theme.BooklandTheme
@@ -142,51 +148,66 @@ class SearchActivity : ComponentActivity() {
                         .height(200.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    val imageLinks = item.volumeInfo.imageLinks
-                    if (imageLinks != null) {
-                        val url: StringBuilder = StringBuilder(imageLinks.thumbnail)
-                        url.insert(4, "s")
+                        val imageLinks = item.volumeInfo.imageLinks
 
-                        CoilImage(
+                        Card(
                             modifier = Modifier
-                                .size(133.dp, 200.dp)
-                                .padding(5.dp, 0.dp),
-                            loading = {
-                                CircularProgressIndicator(
-                                    color = MaterialTheme.colors.onSecondary,
-                                )
-                            },
-                            imageModel = url.toString(),
-                            contentScale = ContentScale.Fit,
-                        )
-                    } else {
-                        CoilImage(
-                            modifier = Modifier
-                                .size(133.dp, 200.dp)
-                                .padding(5.dp, 0.dp),
-                            imageModel = R.drawable.image_not_available,
-                            contentScale = ContentScale.Fit,
-                        )
-                    }
-                    Column {
-                        Text(
-                            item.volumeInfo.title,
-                            color = MaterialTheme.colors.onSecondary,
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                            ),
-                        )
-                        item.volumeInfo.authors?.get(0)?.let {
-                            Text(
-                                it,
-                                color = MaterialTheme.colors.secondaryVariant,
-                            )
+                                .padding(horizontal = 8.dp, vertical = 8.dp)
+                                .fillMaxWidth(),
+                            elevation = 2.dp,
+                            backgroundColor = Color.DarkGray,
+                            shape = RoundedCornerShape(corner = CornerSize(16.dp))
+                        ) {
+                            Row {
+                                if(imageLinks != null) {
+                                    val url: StringBuilder = StringBuilder(imageLinks.thumbnail)
+                                    url.insert(4, "s")
+
+                                    CoilImage(
+                                        modifier = Modifier
+                                            .size(133.dp, 200.dp)
+                                            .padding(5.dp, 0.dp),
+                                        loading = {
+                                            CircularProgressIndicator(
+                                                color = MaterialTheme.colors.onSecondary,
+                                            )
+                                        },
+                                        imageModel = url.toString(),
+                                        contentScale = ContentScale.Fit,
+                                    )
+                                } else {
+                                    CoilImage(
+                                        modifier = Modifier
+                                            .size(133.dp, 200.dp)
+                                            .padding(5.dp, 0.dp),
+                                        imageModel = R.drawable.image_not_available,
+                                        contentScale = ContentScale.Fit,
+                                    )
+                                }
+                                Column(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .fillMaxWidth()
+                                        .align(Alignment.CenterVertically)
+                                ) {
+                                    Text(
+                                        text = item.volumeInfo.title,
+                                        color = MaterialTheme.colors.onSecondary,
+                                        style = TextStyle(
+                                            fontWeight = FontWeight.Bold,
+                                        ),
+                                    )
+                                    item.volumeInfo.authors?.get(0)?.let {
+                                        Text(
+                                            text = it,
+                                            color = MaterialTheme.colors.secondaryVariant,
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                Divider(
-                    color = MaterialTheme.colors.secondaryVariant,
-                )
             }
         }
     }
@@ -200,4 +221,3 @@ class SearchActivity : ComponentActivity() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
-}

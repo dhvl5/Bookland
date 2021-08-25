@@ -1,7 +1,12 @@
 package com.dhaval.bookland
 
 import Items
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -11,16 +16,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.outlined.Call
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,12 +92,21 @@ fun FinishedScreen() {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun BookDetailsScreen(item: Items?) {
+    var descriptionExpandedState by remember { mutableStateOf(false) }
+    val descriptionRotationState by animateFloatAsState(
+        targetValue = if (descriptionExpandedState) 180f else 0f
+    )
+    var detailsExpandedState by remember { mutableStateOf(false) }
+    val detailsRotationState by animateFloatAsState(
+        targetValue = if (detailsExpandedState) 180f else 0f
+    )
+
     Column(
         modifier = Modifier
-            .padding(15.dp, 0.dp)
-            .verticalScroll(rememberScrollState())
+            .padding(15.dp, 0.dp, 15.dp, 15.dp)
             .fillMaxSize(),
     ) {
         Column(
@@ -143,27 +162,73 @@ fun BookDetailsScreen(item: Items?) {
             color = MaterialTheme.colors.secondaryVariant,
         )
 
-        Column {
-            Text(
-                "Description",
-                color = MaterialTheme.colors.secondary,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W500,
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = LinearOutSlowInEasing
+                    )
                 ),
-            )
-            if(item?.volumeInfo?.description != null) {
-                Text(
-                    modifier = Modifier.padding(0.dp, 5.dp),
-                    text = item.volumeInfo.description,
-                    color = MaterialTheme.colors.secondaryVariant,
-                )
-            } else {
-                Text(
-                    modifier = Modifier.padding(0.dp, 5.dp),
-                    text = "Description not found :(",
-                    color = MaterialTheme.colors.secondaryVariant,
-                )
+            backgroundColor = Color.DarkGray,
+            shape = RoundedCornerShape(5.dp),
+            onClick = {
+                descriptionExpandedState = !descriptionExpandedState
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .weight(6f)
+                            .padding(10.dp, 0.dp, 0.dp, 0.dp),
+                        text = "Description",
+                        color = MaterialTheme.colors.secondary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    IconButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .alpha(ContentAlpha.medium)
+                            .rotate(descriptionRotationState),
+                        onClick = {
+                            descriptionExpandedState = !descriptionExpandedState
+                        }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Drop-Down Arrow",
+                            tint = MaterialTheme.colors.secondary,
+                        )
+                    }
+                }
+
+                if (descriptionExpandedState) {
+                    if (item?.volumeInfo?.description != null) {
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = item.volumeInfo.description,
+                            color = MaterialTheme.colors.onSecondary,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            text = "Description not found :(",
+                            color = MaterialTheme.colors.onSecondary,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
             }
         }
 
@@ -172,69 +237,89 @@ fun BookDetailsScreen(item: Items?) {
             color = MaterialTheme.colors.secondaryVariant,
         )
 
-        Column {
-            Text(
-                "Details",
-                color = MaterialTheme.colors.secondary,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W500,
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        easing = LinearOutSlowInEasing
+                    )
                 ),
-            )
+            backgroundColor = Color.DarkGray,
+            shape = RoundedCornerShape(5.dp),
+            onClick = {
+                detailsExpandedState = !detailsExpandedState
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .weight(6f)
+                            .padding(10.dp, 0.dp, 0.dp, 0.dp),
+                        text = "Details",
+                        color = MaterialTheme.colors.secondary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    IconButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .alpha(ContentAlpha.medium)
+                            .rotate(detailsRotationState),
+                        onClick = {
+                            detailsExpandedState = !detailsExpandedState
+                        }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Drop-Down Arrow",
+                            tint = MaterialTheme.colors.secondary,
+                        )
+                    }
+                }
 
-            Column {
-                Row {
-                    Text(modifier = Modifier.width(120.dp), text = "ISBN", color = Color.Gray)
-                    item?.volumeInfo?.industryIdentifiers?.get(0)?.identifier?.let {
-                        Text(text = it, color = MaterialTheme.colors.onSecondary)
-                    }
-                }
-                Row {
-                    Text(modifier = Modifier.width(120.dp), text = "Page Count", color = Color.Gray)
-                    Text(text = item?.volumeInfo?.pageCount.toString(), color = MaterialTheme.colors.onSecondary)
-                }
-                Row {
-                    Text(modifier = Modifier.width(120.dp), text = "Published Date", color = Color.Gray)
-                    item?.volumeInfo?.publishedDate?.let {
-                        Text(text = it, color = MaterialTheme.colors.onSecondary)
-                    }
-                }
-                Row {
-                    Text(modifier = Modifier.width(120.dp), text = "Publisher", color = Color.Gray)
-                    item?.volumeInfo?.publisher?.let {
-                        Text(text = it, color = MaterialTheme.colors.onSecondary)
-                    }
-                }
-                Row {
-                    Text(modifier = Modifier.width(120.dp), text = "Language", color = Color.Gray)
-                    item?.volumeInfo?.language?.let {
-                        Text(text = it, color = MaterialTheme.colors.onSecondary)
+                if (detailsExpandedState) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Row {
+                            Text(modifier = Modifier.width(120.dp), text = "ISBN", color = Color.Gray)
+                            item?.volumeInfo?.industryIdentifiers?.get(0)?.identifier?.let {
+                                Text(text = it, color = MaterialTheme.colors.onSecondary)
+                            }
+                        }
+                        Row {
+                            Text(modifier = Modifier.width(120.dp), text = "Page Count", color = Color.Gray)
+                            Text(text = item?.volumeInfo?.pageCount.toString(), color = MaterialTheme.colors.onSecondary)
+                        }
+                        Row {
+                            Text(modifier = Modifier.width(120.dp), text = "Published Date", color = Color.Gray)
+                            item?.volumeInfo?.publishedDate?.let {
+                                Text(text = it, color = MaterialTheme.colors.onSecondary)
+                            }
+                        }
+                        Row {
+                            Text(modifier = Modifier.width(120.dp), text = "Publisher", color = Color.Gray)
+                            item?.volumeInfo?.publisher?.let {
+                                Text(text = it, color = MaterialTheme.colors.onSecondary)
+                            }
+                        }
+                        Row {
+                            Text(modifier = Modifier.width(120.dp), text = "Language", color = Color.Gray)
+                            item?.volumeInfo?.language?.let {
+                                Text(text = it, color = MaterialTheme.colors.onSecondary)
+                            }
+                        }
                     }
                 }
             }
         }
-
-//        Button(
-//            modifier = Modifier
-//                .align(Alignment.CenterHorizontally)
-//                .padding(20.dp)
-//                .size(100.dp),
-//            shape = RoundedCornerShape(10.dp),
-//            colors = ButtonDefaults.buttonColors(
-//                backgroundColor = MaterialTheme.colors.secondary,
-//            ),
-//            onClick = {
-//
-//            },
-//        ) {
-//            Text(
-//                text = "Save To",
-//                color = Color.White,
-//                style = TextStyle(
-//                    fontSize = 18.sp,
-//                    fontWeight = FontWeight.Bold,
-//                )
-//            )
-//        }
     }
 }
