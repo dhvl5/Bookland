@@ -1,10 +1,11 @@
 package com.dhaval.bookland.viewmodels
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
-import androidx.lifecycle.switchMap
+import Book
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.*
 import com.dhaval.bookland.BookRepository
+import com.dhaval.bookland.utils.Resource
+import kotlinx.coroutines.launch
 
 class BookViewModel : ViewModel() {
     private val _bookQuery = MutableLiveData<String>()
@@ -15,7 +16,9 @@ class BookViewModel : ViewModel() {
 
     val bookQuery = _bookQuery.switchMap {
         liveData {
-            emit(BookRepository.getBooksList(it))
+            emit(
+                BookRepository.getBooksList(it)
+            )
         }
     }
 }

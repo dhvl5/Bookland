@@ -2,18 +2,18 @@
     <!-- Base application theme. -->
     <style name="Theme.Bookland" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">#FF40916C</item>
+        <item name="colorPrimaryVariant">#FF949494</item>
+        <item name="colorOnPrimary">#FF40916C</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">#FF40916C</item>
+        <item name="colorSecondaryVariant">#FFFFFFFF</item>
+        <item name="colorOnSecondary">#FFFFFFFF</item>
         <!-- Status bar color. -->
         <item name="statusBarBackground">@color/statusBarDark</item>
         <item name="android:statusBarColor">@color/statusBarDark</item>
         <!-- Navigation bar color. -->
-        <item name="android:navigationBarColor">@color/statusBarDark</item>
+        <item name="android:navigationBarColor">@color/navigationBarDark</item>
         <!-- Customize your theme here. -->
     </style>
 

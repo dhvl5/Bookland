@@ -1,24 +1,27 @@
 package com.dhaval.bookland
 
 import Book
-import ImageLinks
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
@@ -34,12 +37,18 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import com.airbnb.lottie.compose.*
 import com.dhaval.bookland.ui.theme.BooklandTheme
+import com.dhaval.bookland.utils.Resource
 import com.dhaval.bookland.viewmodels.BookViewModel
 import com.skydoves.landscapist.coil.CoilImage
+import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.util.*
 
 
@@ -47,6 +56,8 @@ class SearchActivity : ComponentActivity() {
     private val bookViewModel by lazy {
         ViewModelProvider(this@SearchActivity).get(BookViewModel::class.java)
     }
+
+    private var isLoading = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,8 +90,28 @@ class SearchActivity : ComponentActivity() {
     fun BookList(bookViewModel: BookViewModel) {
         val bookList by bookViewModel.bookQuery.observeAsState()
 
-        if (bookList != null) {
-            BookListItem(book = bookList)
+        // To Fix: Progress indicator only works first time
+        if(isLoading.value) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        when(bookList) {
+            is Resource.Success -> {
+                BookList(bookList?.data)
+                isLoading.value = false
+            }
+            is Resource.Error -> {
+                if(!isNetworkAvailable(applicationContext)) {
+                    LottieInstance(
+                        rawRes = R.raw.cloud,
+                        text = "No internet connection!",
+                    )
+                }
+
+                isLoading.value = false
+            }
         }
     }
 
@@ -98,7 +129,7 @@ class SearchActivity : ComponentActivity() {
                 overridePendingTransition(R.anim.zoom_in, R.anim.slide_out)
                 window.decorView.hideKeyboard()
             }) {
-                Icon(Icons.Filled.ArrowBack, null, tint = MaterialTheme.colors.secondary)
+                Icon(Icons.Filled.ArrowBack, null, tint = MaterialTheme.colors.onPrimary)
             }
             TextField(
                 modifier = Modifier
@@ -110,13 +141,14 @@ class SearchActivity : ComponentActivity() {
                 },
                 placeholder = {
                     Text(
-                        text = "Start typing...",
-                        color = MaterialTheme.colors.secondaryVariant,
+                        text = "Search books",
+                        color = MaterialTheme.colors.primaryVariant,
                     )
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {
                     bookViewModel.addQuery(textState)
+                    isLoading.value = true
                     window.decorView.hideKeyboard()
                     focusManager.clearFocus()
                 }),
@@ -134,29 +166,35 @@ class SearchActivity : ComponentActivity() {
     }
 
     @Composable
-    fun BookListItem(book: Book?) {
+    fun BookList(book: Book?) {
         val context = LocalContext.current
-        LazyColumn {
-            itemsIndexed(book!!.items){ index, item ->
-                Row(
-                    modifier = Modifier
-                        .clickable {
-                            context.startActivity(BookDetailsActivity.newIntent(context, item))
-                            overridePendingTransition(R.anim.slide_in, R.anim.zoom_out)
-                        }
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
+
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 25.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(13.dp),
+        ) {
+                itemsIndexed(book!!.items){ index, item ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         val imageLinks = item.volumeInfo.imageLinks
 
                         Card(
                             modifier = Modifier
-                                .padding(horizontal = 8.dp, vertical = 8.dp)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .size(0.dp, 150.dp)
+                                .clickable {
+                                    context.startActivity(
+                                        BookDetailsActivity.newIntent(
+                                            context,
+                                            item
+                                        )
+                                    )
+                                    overridePendingTransition(R.anim.slide_in, R.anim.zoom_out)
+                                },
                             elevation = 2.dp,
-                            backgroundColor = Color.DarkGray,
-                            shape = RoundedCornerShape(corner = CornerSize(16.dp))
+                            backgroundColor = MaterialTheme.colors.surface,
+                            shape = RoundedCornerShape(corner = CornerSize(16.dp)),
                         ) {
                             Row {
                                 if(imageLinks != null) {
@@ -165,8 +203,7 @@ class SearchActivity : ComponentActivity() {
 
                                     CoilImage(
                                         modifier = Modifier
-                                            .size(133.dp, 200.dp)
-                                            .padding(5.dp, 0.dp),
+                                            .size(100.dp, 200.dp),
                                         loading = {
                                             CircularProgressIndicator(
                                                 color = MaterialTheme.colors.onSecondary,
@@ -178,8 +215,7 @@ class SearchActivity : ComponentActivity() {
                                 } else {
                                     CoilImage(
                                         modifier = Modifier
-                                            .size(133.dp, 200.dp)
-                                            .padding(5.dp, 0.dp),
+                                            .size(100.dp, 200.dp),
                                         imageModel = R.drawable.image_not_available,
                                         contentScale = ContentScale.Fit,
                                     )
@@ -194,13 +230,15 @@ class SearchActivity : ComponentActivity() {
                                         text = item.volumeInfo.title,
                                         color = MaterialTheme.colors.onSecondary,
                                         style = TextStyle(
+                                            fontSize = 17.sp,
                                             fontWeight = FontWeight.Bold,
                                         ),
                                     )
                                     item.volumeInfo.authors?.get(0)?.let {
                                         Text(
                                             text = it,
-                                            color = MaterialTheme.colors.secondaryVariant,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.primaryVariant,
                                         )
                                     }
                                 }
@@ -208,6 +246,37 @@ class SearchActivity : ComponentActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun LottieInstance(rawRes: Int, text: String) {
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(rawRes))
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center),
+        ) {
+            Column {
+                LottieAnimation(
+                    modifier = Modifier
+                        .size(250.dp, 250.dp)
+                        .align(Alignment.CenterHorizontally),
+                    composition = composition,
+                    iterations = Int.MAX_VALUE,
+                    contentScale = ContentScale.Fit,
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = text,
+                    style = TextStyle(
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                    ),
+                )
             }
         }
     }
@@ -221,3 +290,18 @@ class SearchActivity : ComponentActivity() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val nw      = connectivityManager.activeNetwork ?: return false
+    val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+    return when {
+        actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+        actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+        //for other device how are able to connect with Ethernet
+        actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+        //for check internet over Bluetooth
+        actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
+        else -> false
+    }
+}

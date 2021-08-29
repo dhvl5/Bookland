@@ -90,7 +90,6 @@ dependencies {
     // Accompanist
     implementation 'com.google.accompanist:accompanist-systemuicontroller:0.16.1'
 
-    // Dagger - Hilt
-    // implementation "com.google.dagger:hilt-android:$hilt_version"
-    // kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    // Lottie
+    implementation 'com.airbnb.android:lottie-compose:4.1.0'
 }

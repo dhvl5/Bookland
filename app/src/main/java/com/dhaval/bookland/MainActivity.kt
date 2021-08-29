@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BooklandTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     MainScreen()
                 }
@@ -88,9 +87,9 @@ class MainActivity : ComponentActivity() {
                 context.startActivity(Intent(context, SearchActivity::class.java))
                 overridePendingTransition(R.anim.slide_in, R.anim.zoom_out)
             },
-            backgroundColor = MaterialTheme.colors.secondary
+            backgroundColor = MaterialTheme.colors.secondary,
         ) {
-                Icon(Icons.Filled.Add, "", tint = MaterialTheme.colors.onSecondary)
+            Icon(Icons.Filled.Add, "", tint = MaterialTheme.colors.secondaryVariant)
         }
     }
 

@@ -8,29 +8,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
-    primary = BrunswickGreen,
-    primaryVariant = Purple700,
-    onPrimary = OceanGreen2,
-    secondary = OceanGreen2,
-    secondaryVariant = Color.Gray,
-    onSecondary = Color.White,
-    background = Color.Black,
-    onBackground = Color.Black,
-    surface = Color.Black,
-    onSurface = Color.Black,
+    primary = PrimaryDark,
+    primaryVariant = PrimaryVariantDark,
+    onPrimary = OnPrimaryDark,
+    secondary = SecondaryDark,
+    secondaryVariant = SecondaryVariantDark,
+    onSecondary = OnSecondaryDark,
+    background = BackgroundDark,
+    onBackground = OnBackgroundDark,
+    surface = SurfaceDark,
+    onSurface = OnSurfaceDark,
 )
 
 private val LightColorPalette = lightColors(
-    primary = BrunswickGreen,
-    primaryVariant = Purple700,
-    onPrimary = IlluminatingEmerald,
-    secondary = IlluminatingEmerald,
-    secondaryVariant = Color.Gray,
-    onSecondary = Color.Black,
-    background = Color.White,
-    onBackground = Color.White,
-    surface = Color.White,
-    onSurface = Color.White,
+    primary = PrimaryLight,
+    primaryVariant = PrimaryVariantLight,
+    onPrimary = OnPrimaryLight,
+    secondary = SecondaryLight,
+    secondaryVariant = SecondaryVariantLight,
+    onSecondary = OnSecondaryLight,
+    background = BackgroundLight,
+    onBackground = OnBackgroundLight,
+    surface = SurfaceLight,
+    onSurface = OnSurfaceLight,
 )
 
 @Composable
