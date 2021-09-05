@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="statusBarBackground">@color/statusBarLight</item>
         <item name="android:statusBarColor">@color/statusBarLight</item>
+        <item name="android:windowLightStatusBar">true</item>
         <!-- Navigation bar color. -->
         <item name="android:navigationBarColor">@color/navigationBarLight</item>
         <!-- Customize your theme here. -->

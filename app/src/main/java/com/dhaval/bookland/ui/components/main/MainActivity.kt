@@ -1,4 +1,4 @@
-package com.dhaval.bookland
+package com.dhaval.bookland.ui.components.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,7 +26,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dhaval.bookland.R
+import com.dhaval.bookland.ui.components.search.SearchActivity
 import com.dhaval.bookland.ui.theme.BooklandTheme
+import com.dhaval.bookland.utils.BottomNavItem
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

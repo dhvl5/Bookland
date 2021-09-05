@@ -1,95 +1,31 @@
-package com.dhaval.bookland
+package com.dhaval.bookland.ui.components.details
 
-import Items
+import com.dhaval.bookland.models.Items
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import com.dhaval.bookland.ui.theme.BooklandTheme
-import com.dhaval.bookland.ui.theme.Typography
+import com.dhaval.bookland.R
 import com.skydoves.landscapist.coil.CoilImage
-
-@Composable
-fun ToReadScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-    ) {
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ){
-            items(5){index -> Text(text = "Item: $index", color = MaterialTheme.colors.onSecondary)}
-        }
-    }
-}
-
-@Composable
-fun ReadingScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Reading View",
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colors.onSecondary,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
-    }
-}
-
-@Composable
-fun FinishedScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Text(
-            text = "Finished View",
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colors.onSecondary,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp
-        )
-    }
-}
 
 @ExperimentalMaterialApi
 @Composable
@@ -131,12 +67,13 @@ fun BookDetailsScreen(item: Items?) {
                     contentScale = ContentScale.Fit,
                 )
             } else {
-                CoilImage(
+                Image(
                     modifier = Modifier
                         .size(133.dp, 200.dp)
                         .padding(5.dp, 0.dp),
-                    imageModel = R.drawable.image_not_available,
-                    contentScale = ContentScale.Fit,
+                    imageVector = ImageVector.vectorResource(R.drawable.image_not_available),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onSecondary),
                 )
             }
 
