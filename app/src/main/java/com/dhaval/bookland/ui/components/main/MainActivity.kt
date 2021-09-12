@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,16 +30,41 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dhaval.bookland.R
+import com.dhaval.bookland.models.Status
 import com.dhaval.bookland.ui.components.search.SearchActivity
 import com.dhaval.bookland.ui.theme.BooklandTheme
 import com.dhaval.bookland.utils.BottomNavItem
+import com.dhaval.bookland.viewmodels.BookViewModel
+import com.dhaval.bookland.viewmodels.BookViewModelFactory
 
 class MainActivity : ComponentActivity() {
+    private lateinit var bookViewModel: BookViewModel
+    private lateinit var app: BooklandApplication
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        app = (application as BooklandApplication)
+
+        val repository = (application as BooklandApplication).bookRepository
+        bookViewModel = ViewModelProvider(this, BookViewModelFactory(repository)).get(BookViewModel::class.java)
+
         setContent {
-            BooklandTheme {
+            var themeMode = when(app.themeMode.value) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                else -> isSystemInDarkTheme()
+            }
+            if(app.prefs.contains("mode")) {
+                val value = app.prefs.getInt("mode", 0)
+                themeMode = when(value) {
+                    0 -> false
+                    1 -> true
+                    else -> isSystemInDarkTheme()
+                }
+            }
+
+            BooklandTheme(themeMode) {
                 Surface(color = MaterialTheme.colors.background) {
                     MainScreen()
                 }
@@ -50,10 +78,15 @@ class MainActivity : ComponentActivity() {
 
         Scaffold(
             topBar = { TopBar() },
-            floatingActionButton = { FAB() },
+            floatingActionButton = {
+                if(currentRoute(navController) != "more")
+                    FAB()
+            },
             bottomBar = { BottomBar(navController) },
-        ) {
-            NavigateScreens(navController = navController)
+        ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    NavigateScreens(navController = navController)
+                }
         }
     }
 
@@ -92,20 +125,17 @@ class MainActivity : ComponentActivity() {
             },
             backgroundColor = MaterialTheme.colors.secondary,
         ) {
-            Icon(Icons.Filled.Add, "", tint = MaterialTheme.colors.secondaryVariant)
+            Icon(Icons.Default.Add, "", tint = MaterialTheme.colors.secondaryVariant)
         }
     }
 
     @Composable
     fun BottomBar(navController: NavController) {
-        val items = listOf(BottomNavItem.ToRead, BottomNavItem.Reading, BottomNavItem.Finished)
+        val items = listOf(BottomNavItem.ToRead, BottomNavItem.Reading, BottomNavItem.Finished, BottomNavItem.More)
 
         BottomNavigation(
             backgroundColor = MaterialTheme.colors.background,
         ) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-
             items.forEach { item ->
                 BottomNavigationItem(
                     icon = { Icon(painterResource(id = item.icon), contentDescription = null) },
@@ -113,7 +143,7 @@ class MainActivity : ComponentActivity() {
                     selectedContentColor = MaterialTheme.colors.secondary,
                     unselectedContentColor = MaterialTheme.colors.onSecondary.copy(.4f),
                     alwaysShowLabel = false,
-                    selected = currentRoute == item.route,
+                    selected = currentRoute(navController) == item.route,
                     onClick = {
                         navController.navigate(item.route) {
                             navController.graph.startDestinationRoute?.let { route ->
@@ -134,14 +164,23 @@ class MainActivity : ComponentActivity() {
     fun NavigateScreens(navController: NavHostController) {
         NavHost(navController, startDestination = BottomNavItem.ToRead.route) {
             composable(BottomNavItem.ToRead.route) {
-                ToReadScreen()
+                bookViewModel.getItemsByStatus(Status.TO_READ).observeAsState().value?.let { items -> ToReadScreen(items) }
             }
             composable(BottomNavItem.Reading.route) {
-                ReadingScreen()
+                bookViewModel.getItemsByStatus(Status.READING).observeAsState().value?.let { items -> ReadingScreen(items) }
             }
             composable(BottomNavItem.Finished.route) {
-                FinishedScreen()
+                bookViewModel.getItemsByStatus(Status.FINISHED).observeAsState().value?.let { items -> FinishedScreen(items) }
+            }
+            composable(BottomNavItem.More.route) {
+                MoreScreen(app)
             }
         }
+    }
+
+    @Composable
+    fun currentRoute(navController: NavController): String? {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        return navBackStackEntry?.destination?.route
     }
 }

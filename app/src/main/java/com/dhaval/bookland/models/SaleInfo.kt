@@ -1,5 +1,6 @@
-import com.dhaval.bookland.models.ListPrice
-import com.dhaval.bookland.models.RetailPrice
+package com.dhaval.bookland.models
+
+import Offers
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 

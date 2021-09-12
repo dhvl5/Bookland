@@ -1,14 +1,19 @@
 package com.dhaval.bookland.models
 
-import SaleInfo
-import VolumeInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-data class Items (
+enum class Status {
+    TO_READ, READING, FINISHED
+}
 
+@Entity(tableName = "Books")
+data class Items (
+    var status: Status,
     @SerializedName("kind") val kind : String,
-    @SerializedName("id") val id : String,
+    @PrimaryKey @SerializedName("id") val id : String,
     @SerializedName("etag") val etag : String,
     @SerializedName("selfLink") val selfLink : String,
     @SerializedName("volumeInfo") val volumeInfo : VolumeInfo,

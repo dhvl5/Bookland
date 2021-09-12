@@ -10,11 +10,11 @@
         <item name="colorSecondaryVariant">#FF000000</item>
         <item name="colorOnSecondary">#FF000000</item>
         <!-- Status bar color. -->
-        <item name="statusBarBackground">@color/statusBarLight</item>
-        <item name="android:statusBarColor">@color/statusBarLight</item>
-        <item name="android:windowLightStatusBar">true</item>
+<!--        <item name="statusBarBackground">@color/statusBarLight</item>-->
+<!--        <item name="android:statusBarColor">@color/statusBarLight</item>-->
+<!--        <item name="android:windowLightStatusBar">true</item>-->
         <!-- Navigation bar color. -->
-        <item name="android:navigationBarColor">@color/navigationBarLight</item>
+<!--        <item name="android:navigationBarColor">@color/navigationBarLight</item>-->
         <!-- Customize your theme here. -->
     </style>
 

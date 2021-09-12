@@ -1,7 +1,5 @@
-import com.dhaval.bookland.models.ImageLinks
-import com.dhaval.bookland.models.IndustryIdentifiers
-import com.dhaval.bookland.models.PanelizationSummary
-import com.dhaval.bookland.models.ReadingModes
+package com.dhaval.bookland.models
+
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 

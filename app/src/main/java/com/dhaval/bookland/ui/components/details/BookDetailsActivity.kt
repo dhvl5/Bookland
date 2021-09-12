@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -15,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,13 +27,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import com.dhaval.bookland.R
+import com.dhaval.bookland.models.Status
+import com.dhaval.bookland.ui.components.main.BooklandApplication
+import com.dhaval.bookland.ui.components.main.ThemeMode
 import com.dhaval.bookland.ui.theme.BooklandTheme
+import com.dhaval.bookland.viewmodels.BookViewModel
+import com.dhaval.bookland.viewmodels.BookViewModelFactory
 
 class BookDetailsActivity : ComponentActivity() {
     private val item: Items? by lazy {
         intent?.getSerializableExtra(BOOK_ID) as Items?
     }
+
+    private lateinit var bookViewModel: BookViewModel
+    private lateinit var app: BooklandApplication
+
+    private var openRemoveDialog by mutableStateOf(false)
 
     companion object {
         private const val BOOK_ID = "book_id"
@@ -45,9 +58,27 @@ class BookDetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
-            BooklandTheme {
+        app = (application as BooklandApplication)
 
+        val repository = (application as BooklandApplication).bookRepository
+        bookViewModel = ViewModelProvider(this, BookViewModelFactory(repository)).get(BookViewModel::class.java)
+
+        setContent {
+            var themeMode = when(app.themeMode.value) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                else -> isSystemInDarkTheme()
+            }
+            if(app.prefs.contains("mode")) {
+                val value = app.prefs.getInt("mode", 0)
+                themeMode = when(value) {
+                    0 -> false
+                    1 -> true
+                    else -> isSystemInDarkTheme()
+                }
+            }
+
+            BooklandTheme(themeMode) {
                 val scrollState = rememberScrollState()
                 val openDialog = remember { mutableStateOf(false) }
                 val radioOptions = listOf("To Read", "Reading", "Finished")
@@ -130,9 +161,21 @@ class BookDetailsActivity : ComponentActivity() {
                                     openDialog.value = false
 
                                     when(selectedOption) {
-                                        "To Read" -> Toast.makeText(applicationContext, "To Read", Toast.LENGTH_SHORT).show()
-                                        "Reading" -> Toast.makeText(applicationContext, "Reading", Toast.LENGTH_SHORT).show()
-                                        "Finished" -> Toast.makeText(applicationContext, "Finished", Toast.LENGTH_SHORT).show()
+                                        "To Read" -> {
+                                            Toast.makeText(applicationContext, "Book Saved", Toast.LENGTH_SHORT).show()
+                                            item?.status = Status.TO_READ
+                                            item?.let { bookViewModel.insertItem(it) }
+                                        }
+                                        "Reading" -> {
+                                            Toast.makeText(applicationContext, "Book Saved", Toast.LENGTH_SHORT).show()
+                                            item?.status = Status.READING
+                                            item?.let { bookViewModel.insertItem(it) }
+                                        }
+                                        "Finished" -> {
+                                            Toast.makeText(applicationContext, "Book Saved", Toast.LENGTH_SHORT).show()
+                                            item?.status = Status.FINISHED
+                                            item?.let { bookViewModel.insertItem(it) }
+                                        }
                                     }
                                 }
                             ) {
@@ -150,6 +193,51 @@ class BookDetailsActivity : ComponentActivity() {
                         }
                     )
                 }
+
+                if (openRemoveDialog) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            openRemoveDialog = false
+                        },
+                        title = {
+                            Text(
+                                text = "Remove",
+                                color = MaterialTheme.colors.onSecondary,
+                            )
+                        },
+                        text = {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    text = "Are you sure you want to remove this book?",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colors.onSecondary,
+                                    ),
+                                )
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    item?.id?.let { bookViewModel.deleteItem(it) }
+                                    super.onBackPressed()
+                                }
+                            ) {
+                                Text("Yes")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    openRemoveDialog = false
+                                }
+                            ) {
+                                Text("No")
+                            }
+                        }
+                    )
+                }
             }
         }
     }
@@ -160,6 +248,7 @@ class BookDetailsActivity : ComponentActivity() {
         val titleIconModifier = Modifier
             .fillMaxHeight()
             .width(72.dp - appBarHorizontalPadding)
+        val openMenu = remember { mutableStateOf(false) }
 
         TopAppBar(
             modifier = Modifier.fillMaxWidth(),
@@ -178,7 +267,7 @@ class BookDetailsActivity : ComponentActivity() {
                             enabled = true,
                         ) {
                             Icon(
-                                Icons.Filled.ArrowBack,
+                                Icons.Default.ArrowBack,
                                 contentDescription = null,
                                 tint = MaterialTheme.colors.onPrimary,
                             )
@@ -187,9 +276,8 @@ class BookDetailsActivity : ComponentActivity() {
                 }
                 Row(
                     Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     ProvideTextStyle(value = MaterialTheme.typography.h6) {
                         CompositionLocalProvider(
                             LocalContentAlpha provides ContentAlpha.high,
@@ -204,6 +292,43 @@ class BookDetailsActivity : ComponentActivity() {
                                     fontSize = 20.sp,
                                 ),
                             )
+                        }
+                    }
+                }
+
+                if(item?.status != null) {
+                    IconButton(
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        onClick = {
+                            openMenu.value = true
+                        },
+                        enabled = true,
+                    ) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.onPrimary,
+                        )
+                        DropdownMenu(
+                            expanded = openMenu.value,
+                            onDismissRequest = {
+                                openMenu.value = false
+                            },
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    openMenu.value = false
+                                    openRemoveDialog = true
+                                },
+                            ) {
+                                Text(
+                                    text = "Remove",
+                                    style = TextStyle(
+                                        color = MaterialTheme.colors.onSecondary,
+                                        textAlign = TextAlign.Center,
+                                    ),
+                                )
+                            }
                         }
                     }
                 }

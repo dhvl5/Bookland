@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -26,25 +27,45 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.dhaval.bookland.R
 import com.dhaval.bookland.ui.components.details.BookDetailsActivity
+import com.dhaval.bookland.ui.components.main.BooklandApplication
+import com.dhaval.bookland.ui.components.main.ThemeMode
 import com.dhaval.bookland.utils.ErrorAlert
 import com.dhaval.bookland.ui.theme.BooklandTheme
 import com.dhaval.bookland.utils.Internet
 import com.dhaval.bookland.utils.hideKeyboard
 import com.dhaval.bookland.viewmodels.BookViewModel
+import com.dhaval.bookland.viewmodels.BookViewModelFactory
 import com.skydoves.sandwich.*
-import java.util.*
 
 
 class SearchActivity : ComponentActivity() {
-    private val bookViewModel by lazy {
-        ViewModelProvider(this@SearchActivity).get(BookViewModel::class.java)
-    }
+    private lateinit var bookViewModel: BookViewModel
+    private lateinit var app: BooklandApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        app = (application as BooklandApplication)
+
+        val repository = (application as BooklandApplication).bookRepository
+        bookViewModel = ViewModelProvider(this, BookViewModelFactory(repository)).get(BookViewModel::class.java)
+
         setContent {
-            BooklandTheme {
+            var themeMode = when(app.themeMode.value) {
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+                else -> isSystemInDarkTheme()
+            }
+            if(app.prefs.contains("mode")) {
+                val value = app.prefs.getInt("mode", 0)
+                themeMode = when(value) {
+                    0 -> false
+                    1 -> true
+                    else -> isSystemInDarkTheme()
+                }
+            }
+
+            BooklandTheme(themeMode) {
                 Surface(color = MaterialTheme.colors.background) {
                     SearchScreen()
                 }
@@ -125,7 +146,7 @@ class SearchActivity : ComponentActivity() {
                 overridePendingTransition(R.anim.zoom_in, R.anim.slide_out)
                 window.decorView.hideKeyboard()
             }) {
-                Icon(Icons.Filled.ArrowBack, null, tint = MaterialTheme.colors.onPrimary)
+                Icon(Icons.Default.ArrowBack, null, tint = MaterialTheme.colors.onPrimary)
             }
             TextField(
                 modifier = Modifier
