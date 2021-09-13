@@ -64,13 +64,19 @@ fun BookItemCard(item: Items?, onClick: () -> Unit) {
                         contentScale = ContentScale.Fit,
                     )
                 } else {
-                    Image(
+                    Box(
                         modifier = Modifier
                             .size(100.dp, 200.dp),
-                        imageVector = ImageVector.vectorResource(R.drawable.image_not_available),
-                        contentDescription = "",
-                        colorFilter = ColorFilter.tint(MaterialTheme.colors.onSecondary),
-                    )
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(70.dp, 200.dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.image_not_available),
+                            contentDescription = "",
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSecondary),
+                        )
+                    }
                 }
                 Column(
                     modifier = Modifier
@@ -88,9 +94,14 @@ fun BookItemCard(item: Items?, onClick: () -> Unit) {
                             ),
                         )
                     }
-                    item?.volumeInfo?.authors?.get(0)?.let {
+                    item?.volumeInfo?.authors?.let { it ->
+                        val value = it.joinToString(
+                            separator = ", ",
+                        ) {
+                            it
+                        }
                         Text(
-                            text = it,
+                            text = value,
                             fontSize = 12.sp,
                             color = MaterialTheme.colors.primaryVariant,
                         )

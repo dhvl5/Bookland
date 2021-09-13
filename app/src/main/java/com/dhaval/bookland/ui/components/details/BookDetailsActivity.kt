@@ -54,7 +54,6 @@ class BookDetailsActivity : ComponentActivity() {
             }
     }
 
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -138,7 +137,7 @@ class BookDetailsActivity : ComponentActivity() {
                                     ) {
                                         RadioButton(
                                             selected = (text == selectedOption),
-                                            onClick = null, // null recommended for accessibility with screenreaders
+                                            onClick = null,
                                             colors = RadioButtonDefaults.colors(
                                                 selectedColor = MaterialTheme.colors.primary,
                                                 unselectedColor = MaterialTheme.colors.primaryVariant,
@@ -161,22 +160,13 @@ class BookDetailsActivity : ComponentActivity() {
                                     openDialog.value = false
 
                                     when(selectedOption) {
-                                        "To Read" -> {
-                                            Toast.makeText(applicationContext, "Book Saved", Toast.LENGTH_SHORT).show()
-                                            item?.status = Status.TO_READ
-                                            item?.let { bookViewModel.insertItem(it) }
-                                        }
-                                        "Reading" -> {
-                                            Toast.makeText(applicationContext, "Book Saved", Toast.LENGTH_SHORT).show()
-                                            item?.status = Status.READING
-                                            item?.let { bookViewModel.insertItem(it) }
-                                        }
-                                        "Finished" -> {
-                                            Toast.makeText(applicationContext, "Book Saved", Toast.LENGTH_SHORT).show()
-                                            item?.status = Status.FINISHED
-                                            item?.let { bookViewModel.insertItem(it) }
-                                        }
+                                        "To Read" -> item?.status = Status.TO_READ
+                                        "Reading" -> item?.status = Status.READING
+                                        "Finished" -> item?.status = Status.FINISHED
                                     }
+
+                                    item?.let { bookViewModel.insertItem(it) }
+                                    Toast.makeText(applicationContext, "Book Saved", Toast.LENGTH_SHORT).show()
                                 }
                             ) {
                                 Text("Save")

@@ -19,5 +19,5 @@ data class Items (
     @SerializedName("volumeInfo") val volumeInfo : VolumeInfo,
     @SerializedName("saleInfo") val saleInfo : SaleInfo,
     @SerializedName("accessInfo") val accessInfo : AccessInfo,
-    @SerializedName("searchInfo") val searchInfo : SearchInfo
+    @SerializedName("searchInfo") val searchInfo : SearchInfo?,
 ) : Serializable

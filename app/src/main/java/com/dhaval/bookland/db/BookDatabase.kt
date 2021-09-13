@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.dhaval.bookland.models.Items
 
-@Database(entities = [Items::class], version = 2, exportSchema = false)
+@Database(entities = [Items::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class BookDatabase : RoomDatabase() {
     abstract fun bookDao(): BookDao

@@ -27,7 +27,7 @@ fun MoreScreen(application: BooklandApplication) {
     val openDialog = remember { mutableStateOf(false) }
     val radioOptions = listOf("Light", "Dark", "Auto")
 
-    val value = when(application.prefs.getInt("mode", 0)) {
+    val value = when(application.prefs.getInt("mode", 2)) {
         0 -> "Light"
         1 -> "Dark"
         else -> "Auto"
