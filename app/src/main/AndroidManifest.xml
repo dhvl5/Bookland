@@ -24,7 +24,7 @@
             android:exported="true"
             android:label="@string/title_activity_search"
             android:windowSoftInputMode="stateVisible"
-            android:theme="@style/Theme.BooklandV2.Fullscreen" />
+            android:theme="@style/Theme.Bookland.Fullscreen" />
         <activity
             android:name=".ui.components.main.MainActivity"
             android:exported="true"

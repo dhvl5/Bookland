@@ -33,6 +33,7 @@ import com.dhaval.bookland.models.Status
 import com.dhaval.bookland.ui.components.main.BooklandApplication
 import com.dhaval.bookland.ui.components.main.ThemeMode
 import com.dhaval.bookland.ui.theme.BooklandTheme
+import com.dhaval.bookland.utils.PrefsHelper
 import com.dhaval.bookland.viewmodels.BookViewModel
 import com.dhaval.bookland.viewmodels.BookViewModelFactory
 
@@ -42,7 +43,7 @@ class BookDetailsActivity : ComponentActivity() {
     }
 
     private lateinit var bookViewModel: BookViewModel
-    private lateinit var app: BooklandApplication
+    private lateinit var application: BooklandApplication
 
     private var openRemoveDialog by mutableStateOf(false)
 
@@ -57,19 +58,19 @@ class BookDetailsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        app = (application as BooklandApplication)
+        application = (getApplication() as BooklandApplication)
 
-        val repository = (application as BooklandApplication).bookRepository
+        val repository = application.bookRepository
         bookViewModel = ViewModelProvider(this, BookViewModelFactory(repository)).get(BookViewModel::class.java)
 
         setContent {
-            var themeMode = when(app.themeMode.value) {
+            var themeMode = when(application.themeMode.value) {
                 ThemeMode.LIGHT -> false
                 ThemeMode.DARK -> true
                 else -> isSystemInDarkTheme()
             }
-            if(app.prefs.contains("mode")) {
-                val value = app.prefs.getInt("mode", 0)
+            if(PrefsHelper.keyExists(PrefsHelper.THEME_MODE)) {
+                val value = PrefsHelper.readInt(PrefsHelper.THEME_MODE, 0)
                 themeMode = when(value) {
                     0 -> false
                     1 -> true

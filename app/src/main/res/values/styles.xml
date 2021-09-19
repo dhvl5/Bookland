@@ -1,10 +1,10 @@
 <resources>
 
-    <style name="Widget.Theme.BooklandV2.ActionBar.Fullscreen" parent="Widget.AppCompat.ActionBar">
+    <style name="Widget.Theme.Bookland.ActionBar.Fullscreen" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
 
-    <style name="Widget.Theme.BooklandV2.ButtonBar.Fullscreen" parent="">
+    <style name="Widget.Theme.Bookland.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>

@@ -32,6 +32,7 @@ import com.dhaval.bookland.ui.components.main.ThemeMode
 import com.dhaval.bookland.utils.ErrorAlert
 import com.dhaval.bookland.ui.theme.BooklandTheme
 import com.dhaval.bookland.utils.Internet
+import com.dhaval.bookland.utils.PrefsHelper
 import com.dhaval.bookland.utils.hideKeyboard
 import com.dhaval.bookland.viewmodels.BookViewModel
 import com.dhaval.bookland.viewmodels.BookViewModelFactory
@@ -40,24 +41,24 @@ import com.skydoves.sandwich.*
 
 class SearchActivity : ComponentActivity() {
     private lateinit var bookViewModel: BookViewModel
-    private lateinit var app: BooklandApplication
+    private lateinit var application: BooklandApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        app = (application as BooklandApplication)
+        application = (getApplication() as BooklandApplication)
 
-        val repository = (application as BooklandApplication).bookRepository
+        val repository = application.bookRepository
         bookViewModel = ViewModelProvider(this, BookViewModelFactory(repository)).get(BookViewModel::class.java)
 
         setContent {
-            var themeMode = when(app.themeMode.value) {
+            var themeMode = when(application.themeMode.value) {
                 ThemeMode.LIGHT -> false
                 ThemeMode.DARK -> true
                 else -> isSystemInDarkTheme()
             }
-            if(app.prefs.contains("mode")) {
-                val value = app.prefs.getInt("mode", 0)
+            if(PrefsHelper.keyExists(PrefsHelper.THEME_MODE)) {
+                val value = PrefsHelper.readInt(PrefsHelper.THEME_MODE, 0)
                 themeMode = when(value) {
                     0 -> false
                     1 -> true

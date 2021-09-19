@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dhaval.bookland.R
+import com.dhaval.bookland.utils.PrefsHelper
 
 val items = listOf("Theme", "General", "Changelog", "About")
 
@@ -27,7 +28,7 @@ fun MoreScreen(application: BooklandApplication) {
     val openDialog = remember { mutableStateOf(false) }
     val radioOptions = listOf("Light", "Dark", "Auto")
 
-    val value = when(application.prefs.getInt("mode", 2)) {
+    val value = when(PrefsHelper.readInt(PrefsHelper.THEME_MODE, 2)) {
         0 -> "Light"
         1 -> "Dark"
         else -> "Auto"
@@ -133,18 +134,15 @@ fun MoreScreen(application: BooklandApplication) {
                         when(selectedOption) {
                             "Light" -> {
                                 application.themeMode.value = ThemeMode.LIGHT
-                                application.editor.putInt("mode", ThemeMode.LIGHT.ordinal)
-                                application.editor.commit()
+                                PrefsHelper.writeInt(PrefsHelper.THEME_MODE, ThemeMode.LIGHT.ordinal)
                             }
                             "Dark" -> {
                                 application.themeMode.value = ThemeMode.DARK
-                                application.editor.putInt("mode", ThemeMode.DARK.ordinal)
-                                application.editor.commit()
+                                PrefsHelper.writeInt(PrefsHelper.THEME_MODE, ThemeMode.DARK.ordinal)
                             }
                             "Auto" -> {
                                 application.themeMode.value = ThemeMode.AUTO
-                                application.editor.putInt("mode", ThemeMode.AUTO.ordinal)
-                                application.editor.commit()
+                                PrefsHelper.writeInt(PrefsHelper.THEME_MODE, ThemeMode.AUTO.ordinal)
                             }
                         }
                     }

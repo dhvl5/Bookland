@@ -23,18 +23,18 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.BooklandV2.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.Bookland.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.BooklandV2.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.Bookland.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="Theme.BooklandV2.Fullscreen" parent="Theme.Bookland">
-        <item name="android:actionBarStyle">@style/Widget.Theme.BooklandV2.ActionBar.Fullscreen
+    <style name="Theme.Bookland.Fullscreen" parent="Theme.Bookland">
+        <item name="android:actionBarStyle">@style/Widget.Theme.Bookland.ActionBar.Fullscreen
         </item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowBackground">@null</item>
     </style>
 
-    <style name="ThemeOverlay.BooklandV2.FullscreenContainer" parent="">
+    <style name="ThemeOverlay.Bookland.FullscreenContainer" parent="">
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
