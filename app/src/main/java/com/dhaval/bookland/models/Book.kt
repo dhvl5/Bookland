@@ -7,5 +7,5 @@ data class Book (
 
 	@SerializedName("kind") val kind : String,
 	@SerializedName("totalItems") val totalItems : Int,
-	@SerializedName("items") val items : List<Items>
+	@SerializedName("items") var items : List<Items>
 ) : Serializable

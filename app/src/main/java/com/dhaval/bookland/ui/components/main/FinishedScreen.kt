@@ -9,19 +9,17 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.dhaval.bookland.models.Items
-import com.dhaval.bookland.ui.components.details.BookDetailsActivity
 import com.dhaval.bookland.ui.components.search.BookItemCard
+import com.dhaval.bookland.utils.Screen
 
 @Composable
-fun FinishedScreen(items: List<Items>) {
-    val context = LocalContext.current
-
+fun FinishedScreen(navController: NavHostController, items: List<Items>) {
     if(items.isNotEmpty()) {
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 25.dp, vertical = 18.dp),
@@ -31,12 +29,8 @@ fun FinishedScreen(items: List<Items>) {
                 BookItemCard(
                     item = item,
                     onClick = {
-                        context.startActivity(
-                            BookDetailsActivity.newIntent(
-                                context,
-                                item,
-                            )
-                        )
+                        navController.currentBackStackEntry?.savedStateHandle?.set("item", item)
+                        navController.navigate(Screen.Details.route)
                     }
                 )
             }

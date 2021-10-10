@@ -1,6 +1,5 @@
 package com.dhaval.bookland.ui.components.main
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -23,24 +21,47 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dhaval.bookland.R
+import com.dhaval.bookland.models.Items
 import com.dhaval.bookland.models.Status
-import com.dhaval.bookland.ui.components.search.SearchActivity
+import com.dhaval.bookland.ui.components.details.BookDetailsScreen
+import com.dhaval.bookland.ui.components.search.SearchScreen
 import com.dhaval.bookland.ui.theme.BooklandTheme
-import com.dhaval.bookland.utils.BottomNavItem
-import com.dhaval.bookland.utils.PrefsHelper
+import com.dhaval.bookland.utils.*
 import com.dhaval.bookland.viewmodels.BookViewModel
 import com.dhaval.bookland.viewmodels.BookViewModelFactory
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+
+@Immutable
+enum class BottomTab(
+    val title: String,
+    val icon: Int,
+) {
+    TO_READ("To Read", R.drawable.ic_to_read),
+    READING("Reading", R.drawable.ic_reading),
+    FINISHED("Finished", R.drawable.ic_finished),
+    MORE("More", R.drawable.ic_more_hor),
+}
 
 class MainActivity : ComponentActivity() {
+    private lateinit var navController: NavHostController
     private lateinit var bookViewModel: BookViewModel
     private lateinit var application: BooklandApplication
+
+    override fun onBackPressed() {
+        if(bookViewModel.selectedTab.value != BottomTab.TO_READ) {
+            bookViewModel.selectTab(BottomTab.TO_READ)
+            return
+        }
+
+        super.onBackPressed()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,9 +86,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            BooklandTheme(themeMode) {
-                Surface(color = MaterialTheme.colors.background) {
-                    MainScreen()
+            ProvideWindowInsets {
+                BooklandTheme(themeMode) {
+                    Surface(color = MaterialTheme.colors.background) {
+                        navController = rememberNavController()
+
+                        NavigateScreens(navController = navController)
+                    }
                 }
             }
         }
@@ -75,25 +100,38 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun MainScreen() {
-        val navController = rememberNavController()
-
-        Scaffold(
+        com.google.accompanist.insets.ui.Scaffold(
             topBar = { TopBar() },
             floatingActionButton = {
-                if(currentRoute(navController) != "more")
+                if(bookViewModel.selectedTab.value != BottomTab.MORE)
                     FAB()
             },
-            bottomBar = { BottomBar(navController) },
-        ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    NavigateScreens(navController = navController)
+            bottomBar = { BottomBar() },
+        ) { contentPadding ->
+            Box(modifier = Modifier.padding(contentPadding)) {
+                when (bookViewModel.selectedTab.value) {
+                    BottomTab.TO_READ ->
+                        bookViewModel.getItemsByStatus(Status.TO_READ).observeAsState().value?.let {
+                                items -> ToReadScreen(navController, items)
+                        }
+                    BottomTab.READING ->
+                        bookViewModel.getItemsByStatus(Status.READING).observeAsState().value?.let {
+                                items -> ReadingScreen(navController, items)
+                        }
+                    BottomTab.FINISHED ->
+                        bookViewModel.getItemsByStatus(Status.FINISHED).observeAsState().value?.let {
+                                items -> FinishedScreen(navController, items)
+                        }
+                    BottomTab.MORE ->
+                        MoreScreen(application)
                 }
+            }
         }
     }
 
     @Composable
     fun TopBar() {
-        TopAppBar(
+        com.google.accompanist.insets.ui.TopAppBar(
             title = {
                 Text(
                     text = stringResource(id = R.string.app_name),
@@ -111,18 +149,20 @@ class MainActivity : ComponentActivity() {
             },
             backgroundColor = MaterialTheme.colors.background,
             elevation = 0.dp,
+            contentPadding = rememberInsetsPaddingValues(
+                LocalWindowInsets.current.statusBars,
+                applyBottom = false,
+            ),
         )
     }
 
     @Composable
     fun FAB() {
-        val context = LocalContext.current
-
         FloatingActionButton(
             modifier = Modifier.size(60.dp),
             onClick = {
-                context.startActivity(Intent(context, SearchActivity::class.java))
-                overridePendingTransition(R.anim.slide_in, R.anim.zoom_out)
+                navController.navigate(Screen.Search.route)
+                bookViewModel.emptySearchedResult = true
             },
             backgroundColor = MaterialTheme.colors.secondary,
         ) {
@@ -131,31 +171,22 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun BottomBar(navController: NavController) {
-        val items = listOf(BottomNavItem.ToRead, BottomNavItem.Reading, BottomNavItem.Finished, BottomNavItem.More)
+    fun BottomBar() {
+        val selectedTab by bookViewModel.selectedTab
+        val tabs = BottomTab.values()
 
         BottomNavigation(
             backgroundColor = MaterialTheme.colors.background,
         ) {
-            items.forEach { item ->
+            tabs.forEach { tab ->
                 BottomNavigationItem(
-                    icon = { Icon(painterResource(id = item.icon), contentDescription = null) },
-                    label = { Text(item.title) },
+                    icon = { Icon(painterResource(id = tab.icon), contentDescription = null) },
+                    label = { Text(tab.title) },
                     selectedContentColor = MaterialTheme.colors.secondary,
                     unselectedContentColor = MaterialTheme.colors.onSecondary.copy(.4f),
                     alwaysShowLabel = false,
-                    selected = currentRoute(navController) == item.route,
-                    onClick = {
-                        navController.navigate(item.route) {
-                            navController.graph.startDestinationRoute?.let { route ->
-                                popUpTo(route) {
-                                    saveState = true
-                                }
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
+                    selected = tab == selectedTab,
+                    onClick = { bookViewModel.selectTab(tab) },
                 )
             }
         }
@@ -163,25 +194,21 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun NavigateScreens(navController: NavHostController) {
-        NavHost(navController, startDestination = BottomNavItem.ToRead.route) {
-            composable(BottomNavItem.ToRead.route) {
-                bookViewModel.getItemsByStatus(Status.TO_READ).observeAsState().value?.let { items -> ToReadScreen(items) }
+        NavHost(navController, startDestination = Screen.Main.route) {
+            composable(Screen.Main.route) {
+                MainScreen()
             }
-            composable(BottomNavItem.Reading.route) {
-                bookViewModel.getItemsByStatus(Status.READING).observeAsState().value?.let { items -> ReadingScreen(items) }
+            composable(Screen.Search.route) {
+                SearchScreen(navController = navController, bookViewModel = bookViewModel)
             }
-            composable(BottomNavItem.Finished.route) {
-                bookViewModel.getItemsByStatus(Status.FINISHED).observeAsState().value?.let { items -> FinishedScreen(items) }
-            }
-            composable(BottomNavItem.More.route) {
-                MoreScreen(application)
+            composable(
+                route = Screen.Details.route,
+            ) {
+                val item = navController.previousBackStackEntry?.savedStateHandle?.get<Items>("item")
+                if (item != null) {
+                    BookDetailsScreen(navController = navController, bookViewModel = bookViewModel, item = item)
+                }
             }
         }
-    }
-
-    @Composable
-    fun currentRoute(navController: NavController): String? {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        return navBackStackEntry?.destination?.route
     }
 }

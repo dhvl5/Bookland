@@ -4,7 +4,7 @@ import java.net.Socket
 import java.net.InetSocketAddress
 
 object Internet {
-    fun check() : Boolean {
+    fun isAvailable() : Boolean {
         return try {
             val socket = Socket()
             socket.connect(InetSocketAddress("8.8.8.8",53))

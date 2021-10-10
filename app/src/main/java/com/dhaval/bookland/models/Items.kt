@@ -1,8 +1,10 @@
 package com.dhaval.bookland.models
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
 enum class Status {
@@ -10,6 +12,7 @@ enum class Status {
 }
 
 @Entity(tableName = "Books")
+@Parcelize
 data class Items (
     var status: Status,
     @SerializedName("kind") val kind : String,
@@ -20,4 +23,4 @@ data class Items (
     @SerializedName("saleInfo") val saleInfo : SaleInfo,
     @SerializedName("accessInfo") val accessInfo : AccessInfo,
     @SerializedName("searchInfo") val searchInfo : SearchInfo?,
-) : Serializable
+) : Serializable, Parcelable
