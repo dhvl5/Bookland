@@ -12,5 +12,5 @@ Coming soon
 # Contributing
 Not accepting any PRs at the moment. At least not until the first release :)
 
-# Licensing
+# License
 This project is licensed under [GPL-3.0](LICENSE)
