@@ -199,14 +199,22 @@ class MainActivity : ComponentActivity() {
                 MainScreen()
             }
             composable(Screen.Search.route) {
-                SearchScreen(navController = navController, bookViewModel = bookViewModel)
+                SearchScreen(
+                    navController = navController,
+                    bookViewModel = bookViewModel,
+                )
             }
             composable(
                 route = Screen.Details.route,
             ) {
                 val item = navController.previousBackStackEntry?.savedStateHandle?.get<Items>("item")
                 if (item != null) {
-                    BookDetailsScreen(navController = navController, bookViewModel = bookViewModel, item = item)
+                    BookDetailsScreen(
+                        context = applicationContext,
+                        navController = navController,
+                        bookViewModel = bookViewModel,
+                        item = item,
+                    )
                 }
             }
         }

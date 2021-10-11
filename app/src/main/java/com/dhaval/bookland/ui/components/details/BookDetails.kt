@@ -8,21 +8,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dhaval.bookland.R
@@ -30,6 +23,8 @@ import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun BookDetails(item: Items?) {
+    var expanded: Boolean by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .padding(25.dp, 15.dp)
@@ -124,16 +119,30 @@ fun BookDetails(item: Items?) {
                 )
 
                 if (item?.volumeInfo?.description != null) {
-                    ExpandableText(
-                        modifier = Modifier.padding(10.dp),
-                        text = item.volumeInfo.description,
-                        minimizedMaxLines = 3,
-                    )
+                    if(!expanded) {
+                        Text(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clickable { expanded = !expanded },
+                            text = item.volumeInfo.description,
+                            color = MaterialTheme.colors.onSecondary,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 3,
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .clickable { expanded = !expanded },
+                            text = item.volumeInfo.description,
+                            color = MaterialTheme.colors.onSecondary,
+                        )
+                    }
                 } else {
-                    ExpandableText(
+                    Text(
                         modifier = Modifier.padding(10.dp),
                         text = "Not available",
-                        minimizedMaxLines = 3,
+                        color = MaterialTheme.colors.onSecondary,
                     )
                 }
             }
@@ -268,77 +277,6 @@ fun BookDetails(item: Items?) {
 
                 }
             }
-        }
-    }
-}
-
-
-@Composable
-fun ExpandableText(
-    text: String,
-    modifier: Modifier = Modifier,
-    minimizedMaxLines: Int = 1,
-) {
-    var cutText by remember(text) { mutableStateOf<String?>(null) }
-    var expanded by remember { mutableStateOf(false) }
-    val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
-    val seeMoreSizeState = remember { mutableStateOf<IntSize?>(null) }
-    val seeMoreOffsetState = remember { mutableStateOf<Offset?>(null) }
-
-    // getting raw values for smart cast
-    val textLayoutResult = textLayoutResultState.value
-    val seeMoreSize = seeMoreSizeState.value
-    val seeMoreOffset = seeMoreOffsetState.value
-
-    LaunchedEffect(text, expanded, textLayoutResult, seeMoreSize) {
-        val lastLineIndex = minimizedMaxLines - 1
-        if (!expanded && textLayoutResult != null && seeMoreSize != null
-            && lastLineIndex + 1 == textLayoutResult.lineCount
-            && textLayoutResult.isLineEllipsized(lastLineIndex)
-        ) {
-            var lastCharIndex = textLayoutResult.getLineEnd(lastLineIndex, visibleEnd = true) + 1
-            var charRect: Rect
-            do {
-                lastCharIndex -= 1
-                charRect = textLayoutResult.getCursorRect(lastCharIndex)
-            } while (
-                charRect.left > textLayoutResult.size.width - seeMoreSize.width
-            )
-            seeMoreOffsetState.value = Offset(charRect.left, charRect.bottom - seeMoreSize.height)
-            cutText = text.substring(startIndex = 0, endIndex = lastCharIndex)
-        }
-    }
-
-    Box(modifier) {
-        Text(
-            text = cutText ?: text,
-            maxLines = if (expanded) Int.MAX_VALUE else minimizedMaxLines,
-            overflow = TextOverflow.Ellipsis,
-            onTextLayout = { textLayoutResultState.value = it },
-        )
-        if (!expanded) {
-            val density = LocalDensity.current
-            Text(
-                " ...See more",
-                onTextLayout = { seeMoreSizeState.value = it.size },
-                modifier = Modifier
-                    .then(
-                        if (seeMoreOffset != null)
-                            Modifier.offset(
-                                x = with(density) { seeMoreOffset.x.toDp() },
-                                y = with(density) { seeMoreOffset.y.toDp() },
-                            )
-                        else
-                            Modifier
-                    )
-                    .clickable {
-                        expanded = true
-                        cutText = null
-                    }
-                    .alpha(if (seeMoreOffset != null) 1f else 0f),
-                color = MaterialTheme.colors.secondary,
-                textDecoration = TextDecoration.Underline,
-            )
         }
     }
 }

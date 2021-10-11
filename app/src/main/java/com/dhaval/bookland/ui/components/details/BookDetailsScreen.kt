@@ -1,5 +1,7 @@
 package com.dhaval.bookland.ui.components.details
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import com.dhaval.bookland.models.Items
 import androidx.compose.foundation.layout.*
@@ -32,7 +34,7 @@ import com.dhaval.bookland.viewmodels.BookViewModel
 private var openRemoveDialog by mutableStateOf(false)
 
 @Composable
-fun BookDetailsScreen(navController: NavHostController, bookViewModel: BookViewModel, item: Items) {
+fun BookDetailsScreen(context: Context ,navController: NavHostController, bookViewModel: BookViewModel, item: Items) {
     val scrollState = rememberScrollState()
     val openDialog = remember { mutableStateOf(false) }
     val radioOptions = listOf("To Read", "Reading", "Finished")
@@ -123,6 +125,7 @@ fun BookDetailsScreen(navController: NavHostController, bookViewModel: BookViewM
                         }
 
                         item.let { bookViewModel.insertItem(it) }
+                        Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
                     }
                 ) {
                     Text("Save")
