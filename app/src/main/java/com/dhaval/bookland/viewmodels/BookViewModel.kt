@@ -48,6 +48,12 @@ class BookViewModel(private val repository: BookRepository) : ViewModel() {
 
     val getItems: LiveData<List<Items>> = repository.getItems().asLiveData()
 
+    fun clearDatabase() {
+        viewModelScope.launch {
+            repository.deleteAll()
+        }
+    }
+
     fun getItemsByStatus(status: Status): LiveData<List<Items>> {
         return repository.getItemsByStatus(status).asLiveData()
     }

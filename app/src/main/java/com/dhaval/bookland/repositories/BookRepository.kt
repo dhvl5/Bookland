@@ -19,6 +19,10 @@ class BookRepository(private val bookApi: BookApi, private val bookDatabase: Boo
 
     fun getItems(): Flow<List<Items>> = bookDatabase.bookDao().getAllItems()
 
+    suspend fun deleteAll() {
+        bookDatabase.bookDao().deleteAll()
+    }
+
     fun getItemsByStatus(status: Status): Flow<List<Items>> {
         return bookDatabase.bookDao().getAllItemsByStatus(status)
     }
