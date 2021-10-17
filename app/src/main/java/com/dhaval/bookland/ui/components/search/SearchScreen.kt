@@ -17,8 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.dhaval.bookland.R
 import com.dhaval.bookland.utils.ErrorAlert
@@ -45,6 +49,26 @@ fun SearchScreen(navController: NavHostController, bookViewModel: BookViewModel)
                         .wrapContentSize(Alignment.Center),
                 ) {
                     CircularProgressIndicator()
+                }
+            }
+
+            if(bookViewModel.emptySearchedResult) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colors.background),
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(vertical = 10.dp),
+                        text = "Powered by Google",
+                        style = TextStyle(
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                    )
                 }
             }
         }
