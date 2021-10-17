@@ -123,7 +123,7 @@ class MainActivity : ComponentActivity() {
                                 items -> FinishedScreen(navController, items)
                         }
                     BottomTab.MORE ->
-                        MoreScreen(application)
+                        MoreScreen(applicationContext, application, bookViewModel)
                 }
             }
         }
