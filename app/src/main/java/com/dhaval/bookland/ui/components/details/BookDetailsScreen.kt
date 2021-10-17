@@ -152,6 +152,7 @@ fun BookDetailsScreen(context: Context ,navController: NavHostController, bookVi
                 Text(
                     text = "Remove",
                     style = TextStyle(
+                        fontSize = 20.sp,
                         color = MaterialTheme.colors.onSecondary,
                     ),
                 )
@@ -192,7 +193,7 @@ fun BookDetailsScreen(context: Context ,navController: NavHostController, bookVi
 
     if(bookViewModel.showRemovingDialog) {
         Dialog(
-            onDismissRequest = { bookViewModel.showRemovingDialog = false },
+            onDismissRequest = { },
             content = {
                 Box(
                     modifier = Modifier
@@ -201,7 +202,9 @@ fun BookDetailsScreen(context: Context ,navController: NavHostController, bookVi
                         .size(270.dp, 100.dp),
                 ) {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.CenterStart).padding(start = 30.dp),
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 30.dp),
                     )
                     Text(
                         modifier = Modifier.align(Alignment.Center),
