@@ -8,13 +8,16 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +27,7 @@ import com.skydoves.landscapist.coil.CoilImage
 @Composable
 fun BookDetails(item: Items?) {
     var expanded: Boolean by remember { mutableStateOf(false) }
+    val uriHandler = LocalUriHandler.current
 
     Column(
         modifier = Modifier
@@ -274,7 +278,30 @@ fun BookDetails(item: Items?) {
                             color = MaterialTheme.colors.onSecondary,
                         )
                     }
-
+                }
+                Row {
+                    Text(
+                        modifier = Modifier.width(120.dp),
+                        text = "Link",
+                        color = MaterialTheme.colors.primaryVariant,
+                    )
+                    if(item?.volumeInfo?.infoLink != null) {
+                        Text(
+                            modifier = Modifier.clickable {
+                                uriHandler.openUri(item.volumeInfo.infoLink)
+                            },
+                            text = "Google Books",
+                            color = Color(3, 155, 229, 255),
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                            ),
+                        )
+                    } else {
+                        Text(
+                            text = "-",
+                            color = MaterialTheme.colors.onSecondary,
+                        )
+                    }
                 }
             }
         }
