@@ -14,7 +14,7 @@ enum class Status {
 @Entity(tableName = "Books")
 @Parcelize
 data class Items (
-    var status: Status,
+    var status: Status?,
     @SerializedName("kind") val kind : String,
     @PrimaryKey @SerializedName("id") val id : String,
     @SerializedName("etag") val etag : String,
