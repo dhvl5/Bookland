@@ -70,7 +70,7 @@ class BookViewModel(private val repository: BookRepository) : ViewModel() {
 }
 
 class BookViewModelFactory(private val repository: BookRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return BookViewModel(repository) as T
     }
 }

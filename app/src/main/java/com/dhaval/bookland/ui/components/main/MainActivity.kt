@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
         application = (getApplication() as BooklandApplication)
 
         val repository = application.bookRepository
-        bookViewModel = ViewModelProvider(this, BookViewModelFactory(repository)).get(BookViewModel::class.java)
+        bookViewModel = ViewModelProvider(this, BookViewModelFactory(repository))[BookViewModel::class.java]
 
         setContent {
             var themeMode = when(application.themeMode.value) {
