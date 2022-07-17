@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.dhaval.bookland.models.Items
+import com.dhaval.bookland.utils.Constants
 
 @Database(entities = [Items::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
@@ -22,7 +23,8 @@ abstract class BookDatabase : RoomDatabase() {
                     INSTANCE = Room.databaseBuilder(
                         context,
                         BookDatabase::class.java,
-                        "BookDB")
+                        Constants.DB_NAME)
+                        .setJournalMode(JournalMode.TRUNCATE)
                         .fallbackToDestructiveMigration()
                     .build()
                 }
