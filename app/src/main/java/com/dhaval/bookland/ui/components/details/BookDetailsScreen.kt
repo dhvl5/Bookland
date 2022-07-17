@@ -34,7 +34,7 @@ import com.dhaval.bookland.viewmodels.BookViewModel
 private var openRemoveDialog by mutableStateOf(false)
 
 @Composable
-fun BookDetailsScreen(context: Context ,navController: NavHostController, bookViewModel: BookViewModel, item: Items) {
+fun BookDetailsScreen(context: Context, navController: NavHostController, bookViewModel: BookViewModel, item: Items) {
     val scrollState = rememberScrollState()
     val openDialog = remember { mutableStateOf(false) }
     val radioOptions = listOf("To Read", "Reading", "Finished")
