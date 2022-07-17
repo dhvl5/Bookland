@@ -1,18 +1,13 @@
 package com.dhaval.bookland.ui.components.main
 
 import android.content.Context
-import android.content.Intent
-import android.graphics.drawable.shapes.Shape
-import android.net.Uri
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -20,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -31,11 +25,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.dhaval.bookland.BuildConfig
 import com.dhaval.bookland.R
-import com.dhaval.bookland.ui.theme.Shapes
 import com.google.accompanist.insets.ui.Scaffold
-import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun AboutScreen(context: Context, navController: NavHostController) {
@@ -66,15 +57,6 @@ fun AboutScreen(context: Context, navController: NavHostController) {
                     )
                 }
 
-                /*Text(
-                    text = "Bookland",
-                    color = MaterialTheme.colors.onSecondary,
-                    style = TextStyle(
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                    ),
-                )*/
                 Text(
                     text = stringResource(id = R.string.app_name),
                     color = MaterialTheme.colors.onPrimary,
@@ -91,11 +73,6 @@ fun AboutScreen(context: Context, navController: NavHostController) {
                     color = MaterialTheme.colors.primaryVariant,
                 )
             }
-
-            /*Divider(
-                modifier = Modifier.padding(top = 15.dp),
-                color = MaterialTheme.colors.primaryVariant,
-            )*/
 
             Text(
                 modifier = Modifier
