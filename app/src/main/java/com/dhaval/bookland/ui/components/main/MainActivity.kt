@@ -55,6 +55,21 @@ class MainActivity : ComponentActivity() {
     private lateinit var application: BooklandApplication
 
     override fun onBackPressed() {
+        if(navController.currentBackStackEntry?.destination?.route == Screen.Search.route) {
+            navController.navigate(Screen.Main.route)
+            return
+        }
+
+        if(navController.currentBackStackEntry?.destination?.route == Screen.About.route) {
+            navController.navigate(Screen.Main.route)
+            return
+        }
+
+        if(navController.currentBackStackEntry?.destination?.route == Screen.Libraries.route) {
+            navController.navigate(Screen.Main.route)
+            return
+        }
+
         if(bookViewModel.selectedTab.value != BottomTab.TO_READ) {
             bookViewModel.selectTab(BottomTab.TO_READ)
             return
@@ -123,7 +138,7 @@ class MainActivity : ComponentActivity() {
                                 items -> FinishedScreen(navController, items)
                         }
                     BottomTab.MORE ->
-                        MoreScreen(applicationContext, application, bookViewModel)
+                        MoreScreen(applicationContext, application, bookViewModel, navController)
                 }
             }
         }
@@ -194,7 +209,10 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun NavigateScreens(navController: NavHostController) {
-        NavHost(navController, startDestination = Screen.Main.route) {
+        NavHost(navController, startDestination = Screen.Splash.route) {
+            composable(Screen.Splash.route) {
+                SplashScreen(navController)
+            }
             composable(Screen.Main.route) {
                 MainScreen()
             }
@@ -216,6 +234,12 @@ class MainActivity : ComponentActivity() {
                         item = item,
                     )
                 }
+            }
+            composable(Screen.About.route) {
+                AboutScreen(applicationContext, navController)
+            }
+            composable(Screen.Libraries.route) {
+                LibrariesScreen(navController)
             }
         }
     }
