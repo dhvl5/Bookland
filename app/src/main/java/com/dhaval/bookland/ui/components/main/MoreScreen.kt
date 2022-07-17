@@ -1,11 +1,21 @@
 package com.dhaval.bookland.ui.components.main
 
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,16 +29,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.dhaval.bookland.R
+import com.dhaval.bookland.utils.Constants
 import com.dhaval.bookland.utils.MoreItem
 import com.dhaval.bookland.utils.PrefsHelper
+import com.dhaval.bookland.utils.Screen
 import com.dhaval.bookland.viewmodels.BookViewModel
+import org.apache.commons.io.IOUtils
+import java.io.*
 
 val items = listOf("Theme", "General", "Changelog", "About")
+
 private var openClearDatabaseDialog by mutableStateOf(false)
+private var openImportDialog by mutableStateOf(false)
+private var openExportDialog by mutableStateOf(false)
 
 @Composable
-fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel: BookViewModel) {
+fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel: BookViewModel, navController: NavHostController) {
     val openDialog = remember { mutableStateOf(false) }
     val radioOptions = listOf("Light", "Dark", "Auto")
 
@@ -40,7 +58,23 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
 
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(value) }
 
-    Column {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        val currentDb = context.getDatabasePath(Constants.DB_NAME)
+
+        if (uri != null && context.contentResolver.getType(uri).equals("application/octet-stream")) {
+            importDatabase(context, uri, currentDb)
+
+            Toast.makeText(context, "Database imported successfully", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(context, "Doesn't seem to be a database file :(", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState()),
+    ) {
         Text(
             modifier = Modifier.padding(
                 start = 30.dp,
@@ -87,7 +121,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
             title = "Export",
             description = "Export database as a file",
             onClick = {
-
+                openExportDialog = true
             },
         )
 
@@ -96,7 +130,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
             title = "Import",
             description = "Import database from a file",
             onClick = {
-
+                openImportDialog = true
             },
         )
 
@@ -119,7 +153,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         .size(25.dp),
                     imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
                     contentDescription = null,
-                    tint = Color(206,32,41, 255),
+                    tint = Color.Red,
                 )
                 Column {
                     Text(
@@ -127,7 +161,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         text = "Clear Database",
                         style = TextStyle(
                             fontSize = 18.sp,
-                            color = Color(206,32,41, 255),
+                            color = Color.Red,
                             textAlign = TextAlign.Center,
                         ),
                     )
@@ -136,7 +170,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         text = "Delete all your tracked records",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = Color(206,32,41, 255),
+                            color = Color.Red,
                             textAlign = TextAlign.Center,
                         ),
                     )
@@ -165,7 +199,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
             title = "About",
             description = "A bit about this app and developer",
             onClick = {
-
+                navController.navigate(Screen.About.route)
             },
         )
 
@@ -174,7 +208,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
             title = "Libraries",
             description = "Open source licenses",
             onClick = {
-
+                navController.navigate(Screen.Libraries.route)
             },
         )
     }
@@ -247,7 +281,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         }
                     }
                 ) {
-                    Text("Yes")
+                    Text("Apply")
                 }
             },
             dismissButton = {
@@ -256,7 +290,118 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         openDialog.value = false
                     }
                 ) {
-                    Text("No")
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (openExportDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                openExportDialog = false
+            },
+            title = {
+                Text(
+                    text = "Confirm Export",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colors.onSecondary,
+                    ),
+                )
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = "This operation will generate \"${Constants.BACKED_UP_FILE_NAME}\" file inside \"Download/Bookland\" folder.",
+                        style = TextStyle(
+                            color = MaterialTheme.colors.onSecondary,
+                        ),
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val currentDb = context.getDatabasePath(Constants.DB_NAME)
+
+                        exportDatabase(context, currentDb)
+                        openExportDialog = false
+                    }
+                ) {
+                    Text("Export")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openExportDialog = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    if (openImportDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                openImportDialog = false
+            },
+            title = {
+                Text(
+                    text = "Confirm Import",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colors.onSecondary,
+                    ),
+                )
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        text = "Warning: This operation is irreversible and all your current data will be replaced.",
+                        style = TextStyle(
+                            fontSize = 15.sp,
+                            color = Color.Yellow,
+                        ),
+                    )
+                    Text(
+                        text = "Please select \"${Constants.BACKED_UP_FILE_NAME}\" file.",
+                        style = TextStyle(
+                            color = MaterialTheme.colors.onSecondary,
+                        ),
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                        intent.type = "application/octet-stream"
+                        intent.addCategory(Intent.CATEGORY_OPENABLE)
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                        launcher.launch("application/octet-stream")
+                        openImportDialog = false
+                    }
+                ) {
+                    Text("Import")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openImportDialog = false
+                    }
+                ) {
+                    Text("Cancel")
                 }
             }
         )
@@ -269,7 +414,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
             },
             title = {
                 Text(
-                    text = "Clear database",
+                    text = "Clear Database",
                     style = TextStyle(
                         fontSize = 20.sp,
                         color = MaterialTheme.colors.onSecondary,
@@ -289,7 +434,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         ),
                     )
                     Text(
-                        text = "Are you sure you want to clear database? It will delete all the books and your progress.",
+                        text = "Are you sure you want to clear database? It will delete all the books.",
                         style = TextStyle(
                             color = MaterialTheme.colors.onSecondary,
                         ),
@@ -317,5 +462,73 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                 }
             }
         )
+    }
+}
+
+private fun exportDatabase(context: Context, currentFile: File) {
+
+    val contentUri = MediaStore.Downloads.EXTERNAL_CONTENT_URI
+
+    val selection = MediaStore.MediaColumns.RELATIVE_PATH + "=?"
+
+    val selectionArgs = arrayOf(Environment.DIRECTORY_DOWNLOADS + "/Bookland/") //must include "/" in front and end
+
+    val cursor = context.contentResolver.query(contentUri, null, selection, selectionArgs, null)!!
+
+    var uri: Uri? = null
+
+    cursor.use {
+        while (it.moveToNext()) {
+            val fileName = it.getString(it.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME))
+
+            if (fileName == Constants.BACKED_UP_FILE_NAME) {
+                val id = it.getLong(it.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
+                uri = ContentUris.withAppendedId(contentUri, id)
+                break
+            }
+        }
+
+        if (uri == null) {
+            val currentContentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, Constants.BACKED_UP_FILE_NAME)
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + File.separator + "Bookland")
+            }
+
+            val currentUri = context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, currentContentValues)
+
+            if (currentUri != null) {
+                context.contentResolver.openOutputStream(currentUri, "rwt").use { outputStream ->
+                    outputStream?.write(currentFile.readBytes())
+                }
+            }
+
+            Toast.makeText(context, "Database exported successfully", Toast.LENGTH_LONG).show()
+        } else {
+            try {
+                val outputStream: OutputStream = context.contentResolver.openOutputStream(
+                    uri!!,
+                    "rwt"
+                )!! //overwrite mode, see below
+                outputStream.write(currentFile.readBytes())
+                outputStream.close()
+
+                Toast.makeText(context, "File overwritten successfully", Toast.LENGTH_SHORT).show()
+            } catch (e: IOException) {
+                Toast.makeText(context, "Failed to write file", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+
+private fun importDatabase(context: Context, uri: Uri, currentFile: File) {
+    val parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, "r", null)
+    parcelFileDescriptor?.let {
+        val inputStream = FileInputStream(it.fileDescriptor)
+        val targetFile = File(currentFile.parent, currentFile.name.plus(currentFile.extension))
+
+        val outputStream = FileOutputStream(targetFile)
+
+        IOUtils.copy(inputStream, outputStream)
     }
 }
