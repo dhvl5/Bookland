@@ -3,14 +3,17 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id "com.mikepenz.aboutlibraries.plugin" version "10.3.1"
 }
+
+apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
 android {
     compileSdk 31
 
     defaultConfig {
         applicationId "com.dhaval.bookland"
-        minSdk 25
+        minSdk 29
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -57,9 +60,9 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.navigation:navigation-compose:2.5.0-rc02'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
-    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation 'androidx.navigation:navigation-compose:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
+    implementation 'androidx.activity:activity-compose:1.5.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -81,9 +84,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
     // Coroutine Lifecycle Scope
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 
     // Coil
@@ -98,4 +101,11 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.4.2'
     implementation 'androidx.room:room-ktx:2.4.2'
     kapt 'androidx.room:room-compiler:2.4.2'
+
+    // Apache IO
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
+    // About Libraries
+    implementation "com.mikepenz:aboutlibraries-core:10.3.1"
+    implementation "com.mikepenz:aboutlibraries-compose:10.3.1"
 }
