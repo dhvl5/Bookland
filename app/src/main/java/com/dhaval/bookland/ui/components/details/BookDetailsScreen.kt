@@ -62,7 +62,7 @@ fun BookDetailsScreen(context: Context, navController: NavHostController, bookVi
                 .verticalScroll(scrollState),
             color = MaterialTheme.colors.background,
         ) {
-            BookDetails(item = item)
+            BookDetails(context = context, item = item)
         }
     }
 
