@@ -1,5 +1,10 @@
 package com.dhaval.bookland.ui.components.details
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
 import com.dhaval.bookland.models.Items
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,11 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,9 +29,8 @@ import com.dhaval.bookland.R
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun BookDetails(item: Items?) {
+fun BookDetails(context: Context, item: Items?) {
     var expanded: Boolean by remember { mutableStateOf(false) }
-    val uriHandler = LocalUriHandler.current
 
     Column(
         modifier = Modifier
@@ -287,12 +291,22 @@ fun BookDetails(item: Items?) {
                     if(item?.volumeInfo?.infoLink != null) {
                         Text(
                             modifier = Modifier.clickable {
-                                uriHandler.openUri(item.volumeInfo.infoLink)
+                                val customTabsIntent = CustomTabsIntent.Builder()
+                                    .setDefaultColorSchemeParams(
+                                        CustomTabColorSchemeParams.Builder()
+                                            .setToolbarColor(Color(0xFF252525).hashCode())
+                                            .build()
+                                    )
+                                    .build()
+                                customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                                customTabsIntent.launchUrl(context, Uri.parse(item.volumeInfo.infoLink))
                             },
                             text = "Google Books",
                             color = Color(3, 155, 229, 255),
                             style = TextStyle(
                                 fontSize = 16.sp,
+                                textDecoration = TextDecoration.Underline,
                             ),
                         )
                     } else {
