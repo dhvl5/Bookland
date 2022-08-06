@@ -1,17 +1,17 @@
 package com.dhaval.bookland.ui.components.search
 
-import com.dhaval.bookland.models.Book
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -29,7 +29,8 @@ import com.dhaval.bookland.utils.ErrorAlert
 import com.dhaval.bookland.utils.Internet
 import com.dhaval.bookland.utils.Screen
 import com.dhaval.bookland.viewmodels.BookViewModel
-import com.skydoves.sandwich.*
+
+var textStateDuplicate: String = ""
 
 @Composable
 fun SearchScreen(navController: NavHostController, bookViewModel: BookViewModel) {
@@ -77,37 +78,27 @@ fun SearchScreen(navController: NavHostController, bookViewModel: BookViewModel)
 
 @Composable
 fun BookList(navController: NavHostController, bookViewModel: BookViewModel) {
-    val bookList by bookViewModel.bookQuery.observeAsState()
-
-    bookList?.onSuccess {
-        bookList?.toLiveData {
-            if(data?.totalItems != 0) {
-                if(bookViewModel.emptySearchedResult)
-                    data?.items = emptyList()
-
-                GetBooks(navController, data)
-            } else {
-                ErrorAlert(
-                    drawableRes = R.drawable.ic_reading,
-                    text = "No books found",
-                )
-            }
+    when(bookViewModel.errorType.value) {
+        Internet.ErrorType.NONE -> {
+            GetBooks(navController, bookViewModel)
         }
-    }?.onError {
-
-    }?.onException {
-        if(!Internet.isAvailable()) {
+        Internet.ErrorType.INTERNET -> {
             ErrorAlert(
                 drawableRes = R.drawable.ic_error,
                 text = "No internet connection",
             )
-        } else {
-            exception.message?.let {
-                ErrorAlert(
-                    drawableRes = R.drawable.ic_error,
-                    text = it,
-                )
-            }
+        }
+        Internet.ErrorType.EXCEPTION -> {
+            ErrorAlert(
+                drawableRes = R.drawable.ic_error,
+                text = bookViewModel.errorType.value.errorMsg,
+            )
+        }
+        Internet.ErrorType.CUSTOM -> {
+            ErrorAlert(
+                drawableRes = R.drawable.ic_reading,
+                text = "No books found",
+            )
         }
     }
 }
@@ -123,6 +114,7 @@ fun SearchTopBar(navController: NavHostController, bookViewModel: BookViewModel)
     ) {
         IconButton(onClick = {
             navController.popBackStack()
+            bookViewModel.clearLoadItemsList()
         }) {
             Icon(Icons.Default.ArrowBack, null, tint = MaterialTheme.colors.onPrimary)
         }
@@ -144,8 +136,12 @@ fun SearchTopBar(navController: NavHostController, bookViewModel: BookViewModel)
             keyboardActions = KeyboardActions(onSearch = {
                 if(textState.trim().isNotEmpty()) {
                     bookViewModel.emptySearchedResult = false
-                    bookViewModel.addQuery(textState)
+                    bookViewModel.clearLoadItemsList()
+
+                    bookViewModel.loadItems(textState, 0)
+
                     focusManager.clearFocus()
+                    textStateDuplicate = textState
                 }
             }),
             singleLine = true,
@@ -162,19 +158,51 @@ fun SearchTopBar(navController: NavHostController, bookViewModel: BookViewModel)
 }
 
 @Composable
-fun GetBooks(navController: NavHostController, book: Book?) {
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 25.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(13.dp),
+fun GetBooks(navController: NavHostController, bookViewModel: BookViewModel) {
+    val scrollState = rememberLazyListState()
+    fun LazyListState.isScrolledToEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        itemsIndexed(book!!.items) { _, item ->
-            BookItemCard(
-                item = item,
-                onClick = {
-                    navController.currentBackStackEntry?.savedStateHandle?.set("item", item)
-                    navController.navigate(Screen.Details.route)
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 25.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(13.dp),
+            state = scrollState,
+        ) {
+            itemsIndexed(bookViewModel.items.toList()) { index, item ->
+                val endOfListReached by remember {
+                    derivedStateOf {
+                        scrollState.isScrolledToEnd()
+                    }
                 }
-            )
+
+                LaunchedEffect(endOfListReached) {
+                    if (index >= bookViewModel.items.size - 1 && !bookViewModel.isNextItemsLoading.value) {
+                        bookViewModel.loadNextItems(textStateDuplicate, index)
+                    }
+                }
+
+                BookItemCard(
+                    item = item,
+                    onClick = {
+                        navController.currentBackStackEntry?.savedStateHandle?.set("item", item)
+                        navController.navigate(Screen.Details.route)
+                    }
+                )
+            }
+            item {
+                if (bookViewModel.isNextItemsLoading.value) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
         }
     }
 }
