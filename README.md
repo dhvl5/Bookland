@@ -7,7 +7,11 @@
  - Light/Dark theme support
 
 # Screenshots
-Coming soon
+
+| Home screen | Details screen | Search screen | More screen |
+|-|-|-|-|
+| ![Home screen](screenshots/home-dark.png?raw=true) | ![Details screen](screenshots/details-dark.png?raw=true) | ![Search screen](screenshots/search-dark.png?raw=true) | ![More screen](screenshots/more-dark.png?raw=true) |
+| ![Home screen](screenshots/home-light.png?raw=true) | ![Details screen](screenshots/details-light.png?raw=true) | ![Search screen](screenshots/search-light.png?raw=true) | ![More screen](screenshots/more-light.png?raw=true) |
 
 # Contributing
 Not accepting any PRs at the moment. At least not until the first release :)
