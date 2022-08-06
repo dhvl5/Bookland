@@ -9,8 +9,13 @@ import com.skydoves.sandwich.ApiResponse
 import kotlinx.coroutines.flow.Flow
 
 class BookRepository(private val bookApi: BookApi, private val bookDatabase: BookDatabase) {
-    suspend fun getBooksList(query: String): ApiResponse<Book?> {
-        return bookApi.getBooks(query)
+    suspend fun getBooksList(query: String, startIndex: Int): ApiResponse<Book?> {
+        return bookApi.getBooks(
+            query = query,
+            startIndex = startIndex,
+            maxResults = 20,
+            apiKey = "Your apiKey goes here",
+        )
     }
 
     suspend fun insertItem(item: Items) {
