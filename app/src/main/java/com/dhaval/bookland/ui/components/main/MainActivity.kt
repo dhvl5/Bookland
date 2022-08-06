@@ -149,7 +149,7 @@ class MainActivity : ComponentActivity() {
         com.google.accompanist.insets.ui.TopAppBar(
             title = {
                 Text(
-                    text = stringResource(id = R.string.app_name),
+                    text = bookViewModel.selectedTab.value.title,
                     color = MaterialTheme.colors.onPrimary,
                     style = TextStyle(
                         fontSize = 30.sp,
