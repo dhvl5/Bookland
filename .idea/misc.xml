@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Dhaval/Android Projects/Bookland/app/src/main/res/drawable/ic_article.xml" value="0.3235" />
+        <entry key="..\:/Dhaval/Android Projects/Bookland/app/src/main/res/drawable/ic_delete.xml" value="0.3235" />
+        <entry key="..\:/Dhaval/Android Projects/Bookland/app/src/main/res/drawable/ic_save.xml" value="0.3235" />
         <entry key="..\:/Dhaval/Android Projects/Bookland/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3235" />
         <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/ic_reading.xml" value="0.31203703703703706" />
         <entry key="..\:/Projects/Android_Projects/Bookland/app/src/main/res/drawable/ic_save.xml" value="0.31203703703703706" />
