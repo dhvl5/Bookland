@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +72,8 @@ fun LibrariesTopBar(navController: NavHostController) {
                             text = "Open Source Licenses",
                             color = MaterialTheme.colors.onPrimary,
                             style = TextStyle(
-                                fontSize = 20.sp,
+                                fontSize = 25.sp,
+                                fontFamily = FontFamily.Cursive,
                             ),
                             modifier = Modifier
                                 .fillMaxSize()

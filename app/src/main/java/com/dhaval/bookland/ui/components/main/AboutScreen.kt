@@ -231,7 +231,8 @@ fun AboutTopBar(navController: NavHostController) {
                             text = "About",
                             color = MaterialTheme.colors.onPrimary,
                             style = TextStyle(
-                                fontSize = 20.sp,
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily.Cursive,
                             ),
                             modifier = Modifier
                                 .fillMaxSize()
