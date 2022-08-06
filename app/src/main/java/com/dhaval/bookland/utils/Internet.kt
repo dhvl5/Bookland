@@ -4,6 +4,10 @@ import java.net.Socket
 import java.net.InetSocketAddress
 
 object Internet {
+    enum class ErrorType(var errorMsg: String = "") {
+        INTERNET, EXCEPTION(""), CUSTOM, NONE,
+    }
+
     fun isAvailable() : Boolean {
         return try {
             val socket = Socket()
