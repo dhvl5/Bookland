@@ -53,7 +53,20 @@ fun BookDetailsScreen(context: Context, navController: NavHostController, bookVi
                     },
                     backgroundColor = MaterialTheme.colors.secondary,
             ) {
-                Icon(painterResource(id = R.drawable.ic_save), "", tint = MaterialTheme.colors.secondaryVariant)
+                if(item.status != null) {
+                    Icon(
+                        modifier = Modifier.size(30.dp),
+                        painter = painterResource(id = R.drawable.ic_swap),
+                        contentDescription = "",
+                        tint = MaterialTheme.colors.secondaryVariant,
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_save),
+                        contentDescription = "",
+                        tint = MaterialTheme.colors.secondaryVariant,
+                    )
+                }
             }
         },
     ) {
