@@ -369,7 +369,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         text = "Warning: This operation is irreversible and all your current data will be replaced.",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = Color.Yellow,
+                            color = Color(0xFF9E9D24),
                         ),
                     )
                     Text(
@@ -430,7 +430,7 @@ fun MoreScreen(context: Context, application: BooklandApplication, bookViewModel
                         text = "Warning: This operation is irreversible",
                         style = TextStyle(
                             fontSize = 15.sp,
-                            color = Color.Yellow,
+                            color = Color(0xFF9E9D24),
                         ),
                     )
                     Text(
