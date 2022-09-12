@@ -163,7 +163,19 @@ fun AboutScreen(context: Context, navController: NavHostController) {
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        modifier = Modifier.clickable {  },
+                        modifier = Modifier
+                            .clickable {
+                                val customTabsIntent = CustomTabsIntent.Builder()
+                                    .setDefaultColorSchemeParams(
+                                        CustomTabColorSchemeParams.Builder()
+                                            .setToolbarColor(Color(0xFF252525).hashCode())
+                                            .build()
+                                    )
+                                    .build()
+                                customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                                customTabsIntent.launchUrl(context, Uri.parse(Constants.PRIVACY_URL))
+                            },
                         text = "Privacy Policy",
                         fontSize = 12.sp,
                         color = MaterialTheme.colors.primaryVariant,
@@ -176,7 +188,19 @@ fun AboutScreen(context: Context, navController: NavHostController) {
                         color = MaterialTheme.colors.primaryVariant,
                     )
                     Text(
-                        modifier = Modifier.clickable {  },
+                        modifier = Modifier
+                            .clickable {
+                                val customTabsIntent = CustomTabsIntent.Builder()
+                                    .setDefaultColorSchemeParams(
+                                        CustomTabColorSchemeParams.Builder()
+                                            .setToolbarColor(Color(0xFF252525).hashCode())
+                                            .build()
+                                    )
+                                    .build()
+                                customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                                customTabsIntent.launchUrl(context, Uri.parse(Constants.TERMS_URL))
+                            },
                         text = "Terms & Conditions",
                         fontSize = 12.sp,
                         color = MaterialTheme.colors.primaryVariant,
