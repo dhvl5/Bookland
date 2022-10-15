@@ -14,7 +14,13 @@
 | ![Home screen](screenshots/home-light.png?raw=true) | ![Details screen](screenshots/details-light.png?raw=true) | ![Search screen](screenshots/search-light.png?raw=true) | ![More screen](screenshots/more-light.png?raw=true) |
 
 # Contributing
-Not accepting any PRs at the moment. At least not until the first release :)
+Welcome if you want to contribute your code to **Bookland** (Ex: add feature or fix a bug). Open an issue and submit a pull request to this repository.
+<br><br>
+If you want to contribute:<br>
+
+ 1) &nbsp;Fork the [official repository](https://github.com/dhvl5/Bookland/fork)
+ 2) &nbsp;Apply your changes to **your fork**
+ 3) &nbsp;Submit a [pull request](https://github.com/dhvl5/Bookland/pulls) describing the changes you have made
 
 # License
 This project is licensed under [GPL-3.0](LICENSE)
