@@ -1,0 +1,8 @@
+With Bookland, you can search for the book by its title, author, or ISBN. There are 3 categories within the app, the book you want to read, reading, or finished reading.
+
+Features:
+ - Browse across the large library of books thanks to Google Books APIs
+ - Keep track of all the books you read
+ - Light/Dark theme support
+
+Bookland is also completely free and open-source so anyone can contribute to its development.

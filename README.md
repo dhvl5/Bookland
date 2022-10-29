@@ -12,8 +12,8 @@
 
 | Home screen | Details screen | Search screen | More screen |
 |-|-|-|-|
-| ![Home screen](screenshots/home-dark.png?raw=true) | ![Details screen](screenshots/details-dark.png?raw=true) | ![Search screen](screenshots/search-dark.png?raw=true) | ![More screen](screenshots/more-dark.png?raw=true) |
-| ![Home screen](screenshots/home-light.png?raw=true) | ![Details screen](screenshots/details-light.png?raw=true) | ![Search screen](screenshots/search-light.png?raw=true) | ![More screen](screenshots/more-light.png?raw=true) |
+| ![Home screen](metadata/en-US/images/phoneScreenshots/1.png?raw=true) | ![Details screen](metadata/en-US/images/phoneScreenshots/2.png?raw=true) | ![Search screen](metadata/en-US/images/phoneScreenshots/3.png?raw=true) | ![More screen](metadata/en-US/images/phoneScreenshots/4.png?raw=true) |
+| ![Home screen](metadata/en-US/images/phoneScreenshots/5.png?raw=true) | ![Details screen](metadata/en-US/images/phoneScreenshots/6.png?raw=true) | ![Search screen](metadata/en-US/images/phoneScreenshots/7.png?raw=true) | ![More screen](metadata/en-US/images/phoneScreenshots/8.png?raw=true) |
 
 # Contributing
 Welcome if you want to contribute your code to **Bookland** (Ex: add feature or fix a bug). Open an issue and submit a pull request to this repository.
