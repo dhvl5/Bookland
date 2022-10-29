@@ -14,7 +14,7 @@ class BookRepository(private val bookApi: BookApi, private val bookDatabase: Boo
             query = query,
             startIndex = startIndex,
             maxResults = 20,
-            apiKey = "Your apiKey goes here",
+            apiKey = "AIzaSyAp4FNqMSThS2FWMpE2fKhJ0tKkTbYpbBc",
         )
     }
 
