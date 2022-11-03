@@ -53,6 +53,13 @@ android {
     namespace 'com.dhaval.bookland'
 }
 
+aboutLibraries {
+    // Remove the "generated" timestamp to allow for reproducible builds
+    excludeFields = ["generated"]
+
+    configPath = "config"
+}
+
 dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
